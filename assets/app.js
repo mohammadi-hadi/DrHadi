@@ -204,6 +204,9 @@ function load() {
     state.leaves = r.leaves || [];
     $('#loading') && ($('#loading').hidden = true);
     $('#filters').hidden = false;
+    // The second "write" button only earns its place once there are leaves
+    // above it; otherwise it sits inches below the first and reads as a bug.
+    $('#tail-cta').hidden = state.leaves.length < 3;
     $('#count').textContent = r.stats.leaves;
     $('#stat-leaves').textContent = r.stats.leaves;
     $('#stat-langs').textContent = r.stats.langs;
