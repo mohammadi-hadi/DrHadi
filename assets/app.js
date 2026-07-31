@@ -8,6 +8,7 @@
 
 // ── CONFIG ───────────────────────────────────────────────────────────────
 var API = 'PASTE_YOUR_APPS_SCRIPT_EXEC_URL_HERE';
+var CONFIGURED = API.indexOf('script.google.com') === 0 || /^https?:/.test(API);
 var API_SECRET = 'PASTE_A_LONG_RANDOM_STRING';   // must match APP_SECRET in Code.gs
 var GATE_PASSWORD = 'drhadi123';
 
@@ -220,8 +221,9 @@ function load() {
     var el = $('#loading');
     if (el) {
       el.className = 'empty';
-      el.textContent = 'The book could not be opened just now. Please refresh in a moment — ' +
-        'nothing has been lost.';
+      el.textContent = CONFIGURED
+        ? 'The book could not be opened just now. Please refresh in a moment — nothing has been lost.'
+        : 'The book is not open yet. It will be ready shortly.';
     }
   });
 }
@@ -402,11 +404,22 @@ function submitWrite(e) {
   }).catch(function () {
     btn.disabled = false;
     btn.textContent = state.editing ? 'Save my changes' : 'Bind my leaf in';
-    queue(Object.assign({ action: state.editing ? 'update' : 'create' }, payload));
-    err.innerHTML = 'You seem to be offline. <strong>Your message is saved on this device</strong> ' +
-      'and will be sent as soon as you reconnect. You can also ' +
-      '<a href="mailto:mehran1414@gmail.com?subject=' + encodeURIComponent('Liber Amicorum — my message') +
-      '&body=' + encodeURIComponent(body) + '">email it instead</a>.';
+    var mailto = '<a href="mailto:mehran1414@gmail.com?subject=' +
+      encodeURIComponent('The book for Hadi — my message') +
+      '&body=' + encodeURIComponent(body) + '">send it by email instead</a>';
+    if (!CONFIGURED) {
+      // Nothing to queue against — be honest rather than blaming the network.
+      err.innerHTML = 'The book is not accepting messages yet. ' +
+        '<strong>Nothing you typed has been lost</strong> — it is still on this page. ' +
+        'Please try again shortly, or ' + mailto + '.';
+    } else {
+      queue(Object.assign({ action: state.editing ? 'update' : 'create' }, payload));
+      err.innerHTML = (navigator.onLine === false
+        ? 'You seem to be offline. '
+        : 'We could not reach the book just now. ') +
+        '<strong>Your message is saved on this device</strong> and will be sent automatically ' +
+        'as soon as we can reach it. You can also ' + mailto + '.';
+    }
     err.hidden = false;
   });
 }
@@ -469,6 +482,13 @@ function submitCode() {
 function init() {
   document.documentElement.classList.add('enhanced');
   initGate();
+
+  if (!CONFIGURED) {
+    ['#open-write', '#open-write-2', '#open-find'].forEach(function (sel) {
+      var b = $(sel);
+      if (b) { b.disabled = true; b.title = 'The book is not accepting messages yet.'; }
+    });
+  }
 
   $('#open-write').addEventListener('click', function () { newLeaf(); });
   $('#open-write-2').addEventListener('click', function () { newLeaf(); });
