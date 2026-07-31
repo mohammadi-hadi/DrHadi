@@ -9,7 +9,7 @@
 // ── CONFIG ───────────────────────────────────────────────────────────────
 var API = 'PASTE_YOUR_APPS_SCRIPT_EXEC_URL_HERE';
 var API_SECRET = 'PASTE_A_LONG_RANDOM_STRING';   // must match APP_SECRET in Code.gs
-var GATE_PASSWORD = 'DrHadi123';
+var GATE_PASSWORD = 'drhadi123';
 
 var LS_AUTH = 'liber.auth';
 var LS_KEYS = 'liber.keys';     // array — a guest often writes for the whole family
@@ -68,6 +68,11 @@ function esc(s) {
 }
 
 // ── Gate ─────────────────────────────────────────────────────────────────
+/** Case-insensitive on purpose — a capital letter must never lock anyone out. */
+function matchPass(v) {
+  return String(v == null ? '' : v).trim().toLowerCase() === GATE_PASSWORD;
+}
+
 function unlock(animate) {
   try { localStorage.setItem(LS_AUTH, '1'); } catch (e) {}
   var gate = $('#gate');
@@ -88,7 +93,7 @@ function initGate() {
   var authed = false;
   try { authed = localStorage.getItem(LS_AUTH) === '1'; } catch (e) {}
 
-  if (params.get('k') === GATE_PASSWORD || authed) {
+  if (matchPass(params.get('k')) || authed) {
     $('#gate').hidden = true;
     $('#book').hidden = false;
     load();
@@ -101,11 +106,11 @@ function initGate() {
   $('#gate-form').addEventListener('submit', function (e) {
     e.preventDefault();
     var v = $('#gate-pass').value.trim();
-    if (v === GATE_PASSWORD) {
+    if (matchPass(v)) {
       unlock(true);
     } else {
       var err = $('#gate-error');
-      err.textContent = 'That is not the key. · Dat is niet de sleutel.';
+      err.textContent = 'That is not the key.';
       err.hidden = false;
       $('#gate-pass').value = '';
       $('#gate-pass').focus();
@@ -151,7 +156,7 @@ function leafHTML(l) {
   var date = fmtDate(l.updated || l.created, l.lang);
   return '<article class="leaf" lang="' + esc(l.lang) + '" dir="' + (rtl ? 'rtl' : 'ltr') +
     '" data-lang="' + esc(l.lang) + '" data-id="' + esc(l.id) + '">' +
-    '<p class="leaf__folio">' + (rtl ? 'برگ ' : 'blad ') + fmtFolio(l.folio, l.lang) + '</p>' +
+    '<p class="leaf__folio">' + (rtl ? 'برگ ' : 'leaf ') + fmtFolio(l.folio, l.lang) + '</p>' +
     '<div class="leaf__body">' + esc(l.body) + '</div>' +
     '<p class="leaf__sig"><span class="leaf__name">' + esc(l.name) + '</span>' +
     (meta ? '<br><span class="leaf__meta">' + esc(meta) + '</span>' : '') +
@@ -305,7 +310,7 @@ function flushQueue() {
 function showExLibris(r) {
   var url = location.origin + location.pathname + '?k=' + encodeURIComponent(GATE_PASSWORD) +
             '&t=' + encodeURIComponent(r.token);
-  $('#ex-folio').textContent = 'blad ' + r.folio;
+  $('#ex-folio').textContent = 'leaf ' + r.folio;
   $('#ex-link').value = url;
   $('#ex-code').textContent = r.code;
   $('#write-form').hidden = true;
