@@ -237,25 +237,28 @@ a:hover { text-decoration-thickness: 2px; }
 .tail { margin-block-end: var(--sp-2); }
 
 /* ── Plate ────────────────────────────────────────────────────────────── */
-.plate-section { background: var(--navy); padding: var(--sp-6) 0; }
+.plate-section { background: var(--navy); padding: var(--sp-5) 0 var(--sp-6); }
 .plate { margin: 0; }
 .plate picture { display: block; position: relative; }
-.plate picture { max-inline-size: 68rem; margin-inline: auto; }
+.plate picture { display: block; max-inline-size: 68rem; margin-inline: auto; position: relative; }
 .plate img {
   display: block; inline-size: 100%; block-size: auto;
-  max-block-size: 72vh; object-fit: cover;
-  filter: grayscale(1) contrast(1.06);
+  aspect-ratio: 3 / 2; max-block-size: 74vh; object-fit: cover;
+  filter: grayscale(1) contrast(1.04) brightness(1.06);
 }
+/* Duotone without mix-blend-mode: blend modes are the least predictable thing
+   in CSS across old phones, and this page has to work on them. A flat navy
+   wash over a greyscale image gives the same look with none of the risk. */
 .plate picture::after {
-  content: ''; position: absolute; inset: 0;
-  background: var(--navy); mix-blend-mode: multiply; opacity: .14; pointer-events: none;
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(rgba(0, 18, 64, .26), rgba(0, 18, 64, .26));
 }
 .plate figcaption {
   color: var(--cream); font-size: var(--t-1); line-height: 1.6;
   max-inline-size: 44rem; margin: var(--sp-4) auto 0;
   padding-inline: clamp(1.25rem, 6vw, 3rem);
 }
-.plate figcaption strong { display: block; color: var(--white); font-weight: 400; margin-block: .2rem; }
+.plate__label { display: block; color: var(--white); margin-block: .25rem .35rem; }
 .plate__num {
   display: block; font-family: var(--sans); font-size: var(--t-3); font-weight: 600;
   font-stretch: 75%; letter-spacing: .18em; text-transform: uppercase; color: var(--yellow);
