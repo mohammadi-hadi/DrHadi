@@ -228,11 +228,12 @@ function openSheet(mode) {
   $('#write-form').hidden = mode === 'find';
   $('#find-form').hidden = mode !== 'find';
   $('#exlibris').hidden = true;
+  $('#sent').hidden = true;
   state.openedAt = Date.now();
   var d = $('#sheet');
   if (!d.open) d.showModal();
   setTimeout(function () {
-    var f = mode === 'find' ? $('#f-code') : $('#f-name');
+    var f = mode === 'find' ? $('#f-find-email') : $('#f-name');
     f && f.focus();
   }, 60);
 }
@@ -328,8 +329,13 @@ function submitWrite(e) {
 
   var body = $('#f-body').value.trim();
   var name = $('#f-name').value.trim();
+  var email = $('#f-email').value.trim();
   if (!body || !name) {
     err.textContent = 'Please fill in your name and a message.'; err.hidden = false; return;
+  }
+  if (!/^[^@\s]+@[^@\s.]+\.[^@\s]+$/.test(email)) {
+    err.textContent = 'Please add your email, so we can send you a link to change this later.';
+    err.hidden = false; $('#f-email').focus(); return;
   }
 
   var payload = {
@@ -337,7 +343,7 @@ function submitWrite(e) {
     relation: $('#f-relation').value.trim(),
     city: $('#f-city').value.trim(),
     body: body,
-    email: $('#f-email').value.trim(),
+    email: email,
     lang: detectLang(body),
     hp: $('#f-hp').value,
     elapsed: Date.now() - state.openedAt,
@@ -358,6 +364,8 @@ function submitWrite(e) {
     if (!r || !r.ok) {
       err.textContent = r && r.error === 'too fast'
         ? 'Please take a moment longer, then try again.'
+        : r && r.error === 'bademail'
+        ? 'Please check your email address.'
         : 'That did not save. Your words are still here — please try again.';
       err.hidden = false;
       return;
@@ -389,7 +397,38 @@ function submitFind(e) {
   e.preventDefault();
   var err = $('#find-error');
   err.hidden = true;
+  var email = $('#f-find-email').value.trim();
+  if (!/^[^@\s]+@[^@\s.]+\.[^@\s]+$/.test(email)) {
+    err.textContent = 'Please check that email address.';
+    err.hidden = false;
+    return;
+  }
+  var btn = $('#find-btn');
+  btn.disabled = true; btn.textContent = 'Sending…';
+  callRetry({ action: 'requestEdit', email: email }).then(function (r) {
+    btn.disabled = false; btn.textContent = 'Email me my link';
+    if (!r || !r.ok) {
+      err.textContent = 'That did not work. Please try again in a moment.';
+      err.hidden = false;
+      return;
+    }
+    // Always the same answer, whether or not that address wrote anything —
+    // otherwise this form tells strangers who is in the book.
+    $('#find-form').hidden = true;
+    $('#sent').hidden = false;
+  }).catch(function () {
+    btn.disabled = false; btn.textContent = 'Email me my link';
+    err.textContent = 'That did not work. Please try again in a moment.';
+    err.hidden = false;
+  });
+}
+
+/** The offline door: a code that can be read down a phone line. */
+function submitCode() {
+  var err = $('#find-error');
+  err.hidden = true;
   var code = $('#f-code').value.trim().toUpperCase();
+  if (!code) { err.textContent = 'Enter your code.'; err.hidden = false; return; }
   callRetry({ action: 'lookup', code: code }).then(function (r) {
     if (!r || !r.ok) {
       err.textContent = 'That code was not found. Check it, or ask Mehran or Mohammad.';
@@ -399,8 +438,8 @@ function submitFind(e) {
     state.editing = r.token;
     remember(r.token);
     rememberId(r.leaf.id, r.token);
-    $('#sheet-title').textContent = 'Edit your leaf';
-    $('#sheet-intro').textContent = 'Change anything you like.';
+    $('#sheet-title').textContent = 'Change what you wrote';
+    $('#sheet-intro').textContent = 'Change anything you like. The book has not gone to the printer yet.';
     $('#submit-btn').textContent = 'Save my changes';
     $('#remove-btn').hidden = false;
     fillForm(r.leaf);
@@ -443,6 +482,8 @@ function init() {
   });
 
   $('#ex-done').addEventListener('click', function () { $('#sheet').close(); });
+  $('#sent-done').addEventListener('click', function () { $('#sheet').close(); });
+  $('#code-btn').addEventListener('click', submitCode);
 
   $('#leaves').addEventListener('click', function (e) {
     var b = e.target.closest('[data-edit]');
@@ -467,7 +508,7 @@ function newLeaf() {
   state.editing = null;
   $('#sheet-title').textContent = 'Write your leaf';
   $('#sheet-intro').textContent = 'A few lines is plenty — in English, Dutch or Persian. ' +
-    'You can come back and change what you wrote at any time.';
+    'You can come back and change it until 30 September.';
   $('#submit-btn').textContent = 'Bind my leaf in';
   $('#remove-btn').hidden = true;
   ['#f-name', '#f-relation', '#f-city', '#f-body', '#f-email'].forEach(function (s) { $(s).value = ''; });
