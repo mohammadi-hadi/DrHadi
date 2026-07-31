@@ -107,8 +107,8 @@
       <div><dt class="num">15.30–16.45</dt><dd>Reception — Maskeradezaal</dd></div>
     </dl>
 
-    <p class="note">Please arrive by <span class="num">13.45</span>. Entry to the Senaatszaal is not
-      possible once the ceremony has begun — this is a university rule, strictly kept.</p>
+    <p class="note">Please arrive by <span class="num">13.45</span>. Entry is not possible once the
+      ceremony has begun.</p>
 
     <hr class="rule rule--wide">
     <p class="horaest">Hora est.</p>
@@ -210,26 +210,7 @@
 
 <section class="spread" id="tail-cta" hidden>
   <div class="col cta cta--tail">
-    <p class="tail">✎ <strong>Write something. It will be printed.</strong></p>
-    <button class="btn btn--solid" id="open-write-2" type="button">Write your leaf</button>
-  </div>
-</section>
-
-<!-- ── Colophon ─────────────────────────────────────────────────────── -->
-<section class="spread colophon" id="colophon">
-  <p class="folio">·</p>
-  <div class="col">
-    <h2>Colophon</h2>
-    <p>Set in Merriweather and Open Sans, the typefaces of Utrecht University, with Vazirmatn for
-      Persian. Colours after the Utrecht University corporate identity: yellow <span class="num">#FFCD00</span>,
-      red <span class="num">#C00A35</span>, black and white. <em>This is a personal page kept by
-      Hadi's paranymphs; it is not an official University publication, and the University logo is
-      deliberately not used here.</em></p>
-    <p>Interior photograph of the Senaatszaal: Dick Boetekees / Utrecht University.</p>
-    <p>The password on this site is a courtesy, not security — please do not write anything here you
-      would mind a stranger reading, and no addresses or telephone numbers.</p>
-    <p class="closing">The book goes to the printer in October.<br><strong>What you write now is in it.</strong></p>
-    <p class="horaest">Hora est.</p>
+    <button class="btn btn--solid" id="open-write-2" type="button">✎ Write your leaf</button>
   </div>
 </section>
 
@@ -244,7 +225,7 @@
   <form id="write-form" class="sheet__form">
     <h2 class="sheet__title" id="sheet-title">Write your leaf</h2>
     <p class="sheet__intro" id="sheet-intro">A few lines is plenty — in English, Dutch or Persian.
-      You can come back and change what you wrote at any time.</p>
+      You can come back and change it until 30 September.</p>
 
     <div class="grid2">
       <label class="field">
@@ -271,8 +252,10 @@
     </label>
 
     <label class="field">
-      <span class="field__label">Your email <span class="sub">— only so we can send you the link to edit this later. Never shown on the site.</span></span>
-      <input type="email" name="email" id="f-email" maxlength="200" enterkeyhint="done" autocomplete="email">
+      <span class="field__label">Your email *
+        <span class="sub">— so we can send you a link to change this later. Never shown on the site, never in the book.</span></span>
+      <input type="email" name="email" id="f-email" required maxlength="200"
+             enterkeyhint="done" autocomplete="email" inputmode="email">
     </label>
 
     <!-- honeypot: must stay empty -->
@@ -309,20 +292,42 @@
 
   <!-- Find my leaf -->
   <form id="find-form" class="sheet__form" hidden>
-    <h2 class="sheet__title">Find my leaf</h2>
-    <p class="sheet__intro">Enter the code you were given when you wrote
-      (it looks like <span class="num">HADI-12-KOFFIE</span>).</p>
+    <h2 class="sheet__title">Change what you wrote</h2>
+    <p class="sheet__intro">Enter the email address you used. We will send you a link to your
+      message — only to that address, so nobody else can change your words.</p>
     <label class="field">
-      <span class="field__label">Your code</span>
-      <input name="code" id="f-code" required autocapitalize="characters" spellcheck="false" enterkeyhint="go">
+      <span class="field__label">Your email</span>
+      <input type="email" name="email" id="f-find-email" required maxlength="200"
+             autocomplete="email" inputmode="email" enterkeyhint="go">
     </label>
     <p class="sheet__error" id="find-error" role="alert" hidden></p>
     <div class="sheet__actions">
-      <button class="btn btn--solid" type="submit">Open my leaf</button>
+      <button class="btn btn--solid" type="submit" id="find-btn">Email me my link</button>
     </div>
-    <p class="sub">Lost it? Email <a href="mailto:mehran1414@gmail.com?subject=Liber%20Amicorum%20—%20I%20lost%20my%20code">Mehran</a>
-      or <a href="mailto:m.behbahani@uu.nl?subject=Liber%20Amicorum%20—%20I%20lost%20my%20code">Mohammad</a> and they will read it back to you.</p>
+
+    <hr class="rule rule--wide">
+    <p class="sub">No longer have that inbox? Enter the code you were given instead
+      (it looks like <span class="num">HADI-12-KOFFIE</span>).</p>
+    <label class="field">
+      <span class="field__label">Your code</span>
+      <input name="code" id="f-code" autocapitalize="characters" spellcheck="false" enterkeyhint="go">
+    </label>
+    <div class="sheet__actions">
+      <button class="btn" type="button" id="code-btn">Open with my code</button>
+    </div>
+    <p class="sub">Stuck? Email <a href="mailto:mehran1414@gmail.com?subject=Book%20for%20Hadi%20%E2%80%94%20I%20cannot%20find%20my%20message">Mehran</a>
+      or <a href="mailto:m.behbahani@uu.nl?subject=Book%20for%20Hadi%20%E2%80%94%20I%20cannot%20find%20my%20message">Mohammad</a> and they will help.</p>
   </form>
+
+  <!-- Link sent -->
+  <div id="sent" class="exlibris" hidden>
+    <p class="exlibris__mark">Check your inbox</p>
+    <h2 class="exlibris__title">We have sent you a link.</h2>
+    <p>If a message in the book was written from that address, a link to change it is on its way.
+      It can take a minute to arrive, and it sometimes lands in spam.</p>
+    <button class="btn btn--solid" type="button" id="sent-done">Back to the book</button>
+  </div>
+
 </dialog>
 
 <script src="assets/app.js"></script>

@@ -18,7 +18,8 @@ there is no server to run and nothing that sleeps or expires.
 2. Copy the Sheet ID from its URL: `docs.google.com/spreadsheets/d/`**`THIS_PART`**`/edit`
 3. In that Sheet: **Extensions → Apps Script**. Delete the placeholder and paste
    `apps-script/Code.gs`.
-4. At the top of the script set `SHEET_ID` and `APP_SECRET` (any long random string).
+4. At the top of the script set `SHEET_ID` and `APP_SECRET` (any long random string). `SITE_URL`
+   and `GATE_PASS` are already set and are used to build the links guests get by email.
 5. Run the `setup` function once to create the `leaves` tab and authorise the script.
 
 ### 2. Deploy
@@ -66,6 +67,22 @@ In the Apps Script editor, **Project Settings → Script Properties**:
 |---|---|
 | `OWNER_EMAIL` | Emails a copy of every message the moment it arrives, so a second copy always exists outside the Sheet |
 | `FOLDER_ID` | Google Drive folder for photo uploads |
+
+### How guests change what they wrote
+
+Email is required when writing. Three doors, in the order people actually use them:
+
+1. **The link.** On submitting, the guest sees their edit link on screen *and* receives it by email.
+2. **Ask for it again.** "Change what you wrote" takes an email address and sends the link **to that
+   address only**. It never says whether that address wrote anything — otherwise the form would tell
+   strangers who is in the book. Deliberately not "type an email and edit on the spot": email
+   addresses are not secrets, and that would let anyone rewrite anyone's message.
+3. **The spoken code** (`HADI-12-KOFFIE`), for someone who no longer has that inbox. A paranymph can
+   read it down the phone.
+
+Mail sends via `MailApp` — 100 recipients/day on a consumer account, which is ample here. If the
+quota is ever exhausted the write path still works and still shows the link on screen; only the
+emailed copy is skipped.
 
 ---
 
