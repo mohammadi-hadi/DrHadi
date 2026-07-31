@@ -7,9 +7,9 @@
    ═══════════════════════════════════════════════════════════════════════ */
 
 // ── CONFIG ───────────────────────────────────────────────────────────────
-var API = 'PASTE_YOUR_APPS_SCRIPT_EXEC_URL_HERE';
+var API = 'https://script.google.com/macros/s/AKfycbxn006w5LtuL_mr9JubTE3UX6Ty11y2afVECW5oY-zFMD_wxfmI_n02r6yph5UUQfjHsg/exec';
 var CONFIGURED = API.indexOf('script.google.com') === 0 || /^https?:/.test(API);
-var API_SECRET = 'PASTE_A_LONG_RANDOM_STRING';   // must match APP_SECRET in Code.gs
+var API_SECRET = 'ucgmiGcSkoHtLc3hJDWK8C_bD0YoVtb2m8jsaMMr6K4';   // must match APP_SECRET in Code.gs
 var GATE_PASSWORD = 'drhadi123';
 
 var LS_AUTH = 'liber.auth';
