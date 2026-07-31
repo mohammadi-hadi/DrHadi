@@ -12,7 +12,7 @@
  */
 
 // ── CONFIG ───────────────────────────────────────────────────────────────────
-var SHEET_ID   = '153BWeUzJ2uVt-EFPhUwN6AMo-sqnMgdLoZKHtdtcKgE';   // the one sheet this script touches
+var SHEET_ID   = 'PASTE_YOUR_SHEET_ID_HERE';       // the one sheet this script touches
 var APP_SECRET = 'PASTE_A_LONG_RANDOM_STRING'; // must match API_SECRET in assets/app.js
 var TAB        = 'leaves';
 var SITE_URL   = 'https://mohammadi.cv/DrHadi/';  // used to build edit links
