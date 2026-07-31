@@ -12,7 +12,7 @@
  */
 
 // ── CONFIG ───────────────────────────────────────────────────────────────────
-var SHEET_ID   = 'PASTE_YOUR_SHEET_ID_HERE';   // from the Sheet URL: /d/<THIS>/edit
+var SHEET_ID   = '153BWeUzJ2uVt-EFPhUwN6AMo-sqnMgdLoZKHtdtcKgE';   // the one sheet this script touches
 var APP_SECRET = 'PASTE_A_LONG_RANDOM_STRING'; // must match API_SECRET in assets/app.js
 var TAB        = 'leaves';
 var SITE_URL   = 'https://mohammadi.cv/DrHadi/';  // used to build edit links
@@ -124,7 +124,6 @@ function doPost(e) {
     if (b.action === 'update')   return out(update_(b));
     if (b.action === 'lookup')   return out(lookup_(b));
     if (b.action === 'requestEdit') return out(requestEdit_(b));
-    if (b.action === 'addPhoto') return out(addPhoto_(b));
     return out({ ok: false, error: 'bad action' });
   } catch (err) {
     return out({ ok: false, error: String(err) });
@@ -254,28 +253,6 @@ function lookup_(b) {
     },
     token: String(r.token)
   };
-}
-
-/** v2 — photo attach. Stores a Drive file id, never base64, in the sheet. */
-function addPhoto_(b) {
-  var FOLDER_ID = PropertiesService.getScriptProperties().getProperty('FOLDER_ID');
-  if (!FOLDER_ID) return { ok: false, error: 'nofolder' };
-  var r = findByToken_(b);
-  if (!r) return { ok: false, error: 'notfound' };
-
-  var m = String(b.dataUrl || '').match(/^data:([\w\/\-\.\+]+);base64,(.+)$/);
-  if (!m) return { ok: false, error: 'baddata' };
-
-  var blob = Utilities.newBlob(Utilities.base64Decode(m[2]), m[1],
-    'leaf-' + String(r.id).slice(0, 8) + '-' + Date.now() + '.jpg');
-  var file = DriveApp.getFolderById(FOLDER_ID).createFile(blob);
-  file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-
-  var ids = r.photos ? String(r.photos).split(',').filter(String) : [];
-  if (ids.length >= 3) return { ok: false, error: 'max' };
-  ids.push(file.getId());
-  sheet_().getRange(r._row, HEAD.indexOf('photos') + 1).setValue(ids.join(','));
-  return { ok: true, id: file.getId(), photos: ids };
 }
 
 /**
