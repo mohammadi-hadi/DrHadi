@@ -67,9 +67,9 @@
 <div class="band">
   <p class="band__text">a book of congratulations</p>
   <p class="band__stats" id="stats">
-    <span class="num" id="stat-leaves">—</span> leaves ·
-    <span class="num" id="stat-langs">—</span> languages ·
-    <span class="num" id="stat-cities">—</span> cities
+    <span class="num" id="stat-leaves">—</span> <span id="w-leaves">leaves</span> ·
+    <span class="num" id="stat-langs">—</span> <span id="w-langs">languages</span> ·
+    <span class="num" id="stat-cities">—</span> <span id="w-cities">cities</span>
   </p>
 </div>
 
@@ -251,7 +251,7 @@
                 class="composer" enterkeyhint="enter"></textarea>
     </label>
 
-    <label class="field">
+    <label class="field" id="email-field">
       <span class="field__label">Your email *
         <span class="sub">— so we can send you a link to change this later. Never shown on the site, never in the book.</span></span>
       <input type="email" name="email" id="f-email" required maxlength="200"

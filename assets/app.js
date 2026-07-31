@@ -18,7 +18,7 @@ var LS_DRAFT = 'liber.draft';
 var $ = function (s, r) { return (r || document).querySelector(s); };
 var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
 
-var state = { leaves: [], filter: 'all', editing: null, openedAt: 0 };
+var state = { leaves: [], filter: 'all', editing: null, editFolio: null, openedAt: 0 };
 
 // ── API ──────────────────────────────────────────────────────────────────
 function call(payload) {
@@ -211,6 +211,9 @@ function load() {
     $('#stat-leaves').textContent = r.stats.leaves;
     $('#stat-langs').textContent = r.stats.langs;
     $('#stat-cities').textContent = r.stats.cities;
+    $('#w-leaves').textContent = r.stats.leaves === 1 ? 'leaf' : 'leaves';
+    $('#w-langs').textContent = r.stats.langs === 1 ? 'language' : 'languages';
+    $('#w-cities').textContent = r.stats.cities === 1 ? 'city' : 'cities';
     render();
     flushQueue();
   }).catch(function () {
@@ -238,6 +241,24 @@ function openSheet(mode) {
   }, 60);
 }
 
+/** Editing needs no email: the row already has one, and update_ never
+ *  touches it. Leaving the field `required` made the browser silently
+ *  refuse to submit — no error, no save. */
+function setMode(isEdit, leaf) {
+  var email = $('#f-email');
+  email.required = !isEdit;
+  $('#email-field').hidden = isEdit;
+  $('#sheet-title').textContent = isEdit ? 'Change what you wrote' : 'Write your leaf';
+  $('#sheet-intro').textContent = isEdit
+    ? 'Change anything you like, until 30 September.'
+    : 'A few lines is plenty — in English, Dutch or Persian. ' +
+      'You can come back and change it until 30 September.';
+  $('#submit-btn').textContent = isEdit ? 'Save my changes' : 'Bind my leaf in';
+  $('#remove-btn').hidden = !isEdit;
+  var known = leaf && state.leaves.filter(function (l) { return l.id === leaf.id; })[0];
+  state.editFolio = known ? known.folio : null;
+}
+
 function fillForm(leaf) {
   $('#f-name').value = leaf.name || '';
   $('#f-relation').value = leaf.relation || '';
@@ -251,10 +272,7 @@ function openEditByToken(token) {
     if (!r || !r.ok) return;
     state.editing = token;
     rememberId(r.leaf.id, token);
-    $('#sheet-title').textContent = 'Edit your leaf';
-    $('#sheet-intro').textContent = 'Change anything you like. The book has not gone to the printer yet.';
-    $('#submit-btn').textContent = 'Save my changes';
-    $('#remove-btn').hidden = false;
+    setMode(true, r.leaf);
     fillForm(r.leaf);
     openSheet('write');
   });
@@ -267,7 +285,7 @@ function updateProof() {
   box.hidden = false;
   var lang = detectLang(body);
   var leaf = {
-    id: '_', folio: state.leaves.length + 1, lang: lang, body: body,
+    id: '_', folio: state.editFolio || state.leaves.length + 1, lang: lang, body: body,
     name: $('#f-name').value || 'Your name',
     relation: $('#f-relation').value, city: $('#f-city').value,
     created: new Date().toISOString()
@@ -333,7 +351,7 @@ function submitWrite(e) {
   if (!body || !name) {
     err.textContent = 'Please fill in your name and a message.'; err.hidden = false; return;
   }
-  if (!/^[^@\s]+@[^@\s.]+\.[^@\s]+$/.test(email)) {
+  if (!state.editing && !/^[^@\s]+@[^@\s.]+\.[^@\s]+$/.test(email)) {
     err.textContent = 'Please add your email, so we can send you a link to change this later.';
     err.hidden = false; $('#f-email').focus(); return;
   }
@@ -506,11 +524,7 @@ function init() {
 
 function newLeaf() {
   state.editing = null;
-  $('#sheet-title').textContent = 'Write your leaf';
-  $('#sheet-intro').textContent = 'A few lines is plenty — in English, Dutch or Persian. ' +
-    'You can come back and change it until 30 September.';
-  $('#submit-btn').textContent = 'Bind my leaf in';
-  $('#remove-btn').hidden = true;
+  setMode(false, null);
   ['#f-name', '#f-relation', '#f-city', '#f-body', '#f-email'].forEach(function (s) { $(s).value = ''; });
   restoreDraft();
   openSheet('write');
