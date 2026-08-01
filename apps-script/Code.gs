@@ -249,33 +249,36 @@ function update_(b) {
 
 /** Reopen your own leaf from a secret link or a spoken code. */
 function lookup_(b) {
-  // A spoken code is short by design so it can be read down a phone line.
-  // That makes it guessable, so wrong guesses are counted per leaf and cut off
-  // long before anyone could work through the combinations. Counting per leaf
-  // rather than globally means one person's guessing cannot lock out everyone.
+  // A spoken code is short by design so it can be read down a phone line, which
+  // also makes it guessable. Wrong guesses are counted per message and cut off
+  // after ten. The count is checked only AFTER the lookup, so a correct code
+  // always opens the message — otherwise someone guessing at your leaf would
+  // lock you out of your own words, which is the opposite of the point.
   var code = String(b.code || '').trim().toUpperCase();
   var cache = CacheService.getScriptCache();
-  var bucket = null;
-  if (!b.token && code) {
-    bucket = 'guess_' + code.split('-').slice(0, 2).join('-');
-    if (Number(cache.get(bucket) || 0) >= 10) return { ok: false, error: 'toomany' };
-  }
+  var bucket = (!b.token && code) ? 'guess_' + code.split('-').slice(0, 2).join('-') : null;
 
   var r = findByToken_(b);
-  if (!r || String(r.status) === 'hidden') {
-    if (bucket) cache.put(bucket, String(Number(cache.get(bucket) || 0) + 1), 3600);
-    return { ok: false, error: 'notfound' };
+
+  if (r && String(r.status) !== 'hidden') {
+    if (bucket) cache.remove(bucket);   // a right answer clears the slate
+    return {
+      ok: true,
+      leaf: {
+        id: String(r.id), name: String(r.name || ''), relation: String(r.relation || ''),
+        city: String(r.city || ''), lang: String(r.lang || 'en'), body: String(r.body || ''),
+        code: String(r.code || ''), photos: r.photos ? String(r.photos).split(',').filter(String) : []
+      },
+      token: String(r.token)
+    };
   }
-  if (bucket) cache.remove(bucket);
-  return {
-    ok: true,
-    leaf: {
-      id: String(r.id), name: String(r.name || ''), relation: String(r.relation || ''),
-      city: String(r.city || ''), lang: String(r.lang || 'en'), body: String(r.body || ''),
-      code: String(r.code || ''), photos: r.photos ? String(r.photos).split(',').filter(String) : []
-    },
-    token: String(r.token)
-  };
+
+  if (bucket) {
+    var n = Number(cache.get(bucket) || 0);
+    if (n >= 10) return { ok: false, error: 'toomany' };
+    cache.put(bucket, String(n + 1), 3600);
+  }
+  return { ok: false, error: 'notfound' };
 }
 
 /**
