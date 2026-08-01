@@ -116,3 +116,92 @@ that outlives every service involved.
   staff to name the university on a personal page in text form but not to use the logo. The identity
   here is built from the palette, the typefaces and the building.
 - Senaatszaal photograph: Dick Boetekees / Utrecht University.
+
+---
+
+## How it works
+
+Three pieces, and only the middle one can touch your data.
+
+```
+  A guest's browser                Google Apps Script              Google Sheet
+  mohammadi.cv/DrHadi/     ──►     the /exec web app        ──►    tab "leaves"
+  (static HTML/CSS/JS)     ◄──     runs as YOUR account     ◄──    one row per message
+     GitHub Pages                  checks the secret,
+                                   guards against spam,
+                                   sends the emails
+```
+
+**The page is dumb on purpose.** GitHub Pages can only serve files — it cannot store anything. So
+the page ships with no messages in it at all; it asks for them after it loads. That is why viewing
+the page source shows you nothing.
+
+**Writing.** The browser POSTs `{k: secret, action: "create", name, body, email, elapsed}`. The
+script checks the secret, rejects submissions faster than 4 seconds or with the honeypot filled,
+appends a row, and answers with the leaf number, a private `token` and a spoken `code`. It then
+emails the guest their edit link, and emails you a copy of the message.
+
+**Reading.** The browser POSTs `{action: "list"}`. The script walks the rows, skips any marked
+`hidden`, numbers the rest 1..n, and returns them **without** the token, email or code columns.
+Those three never leave the server.
+
+**Editing.** The link `?t=<token>` looks the row up *by token*, never by position. Saving appends
+the previous text to the `revisions` column, so nothing written is ever truly overwritten.
+"Remove" only sets `status` to `hidden` — the row stays in the sheet.
+
+**One quirk worth knowing.** Requests must stay CORS "simple requests": `POST`, `Content-Type:
+text/plain`, no custom headers. Google answers a CORS preflight with `405` before the script ever
+runs, so a normal `application/json` POST would fail. The secret travels in the body for the same
+reason.
+
+---
+
+## How to test it
+
+### The five-minute check, by hand
+
+1. **Open** `https://mohammadi.cv/DrHadi/` — you should get the password card, and the book should
+   not be visible behind it.
+2. **Enter** `drhadi123` (capitals are ignored). The book opens.
+3. **Write a message.** Take more than 4 seconds over it. You should land on the cream "Ex libris"
+   page with a leaf number, an edit link and a code like `HADI-3-KOFFIE`.
+4. **Check your inbox** — a "Thank you" email with that link, plus an owner copy of the message.
+5. **Open the edit link in a different browser** (or a private window). The form should open
+   pre-filled. Change something, save, and confirm the book shows the new text.
+6. **Remove it** with "Remove my leaf" so the book is clean again.
+
+If all six work, the whole system works.
+
+### Testing from the command line
+
+Reading can be checked with `curl`:
+
+```sh
+curl -s -L "<EXEC_URL>?k=<SECRET>"          # the whole book as JSON
+curl -s -L "<EXEC_URL>?k=wrong"             # should answer {"ok":false,"error":"auth"}
+```
+
+**Writing cannot be tested with `curl`.** Google answers a POST with a 302 to a different host,
+and `curl -L` turns the follow-up into a GET — so the write happens but you get an error page back,
+and `--post302` does not help because the redirect target refuses POST. Test writes from a browser
+console on the live page instead:
+
+```js
+const API = '<EXEC_URL>', K = '<SECRET>';
+const call = p => fetch(API, {
+  method: 'POST',
+  headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+  body: JSON.stringify(Object.assign({ k: K }, p))
+}).then(r => r.json());
+
+await call({ action: 'list' });
+```
+
+### If something looks wrong
+
+| Symptom | Cause |
+|---|---|
+| "The book is not open yet" | `API` in `assets/app.js` is still the placeholder |
+| "We could not reach the book" | the script is unauthorised, or the deployment was replaced |
+| `{"error":"auth"}` | `API_SECRET` and `APP_SECRET` no longer match |
+| A message vanished | check the `status` column — it is `hidden`, not deleted |
