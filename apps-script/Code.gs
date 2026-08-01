@@ -22,7 +22,10 @@ var GATE_PASS  = 'drhadi123';                    // must match GATE_PASSWORD in 
 // always the Google account this script is deployed on — that cannot be
 // changed here, so deploy on whichever account should appear as the sender.
 var MAIL_FROM_NAME = 'The book for Hadi';
-var MAIL_REPLY_TO  = 'mehran1414@gmail.com';
+// No replyTo on purpose. A Reply-To that differs from the From address, next to
+// a one-off link, is a classic phishing signal — university mail systems score
+// it hard, and these messages were landing in quarantine because of it.
+// Replies now simply go back to the account that sends them.
 
 // Column order in the sheet. Do not reorder — code indexes by name via HEAD.
 var HEAD = ['id','created','updated','name','relation','city','lang','body',
@@ -283,7 +286,6 @@ function requestEdit_(b) {
     MailApp.sendEmail({
       to: email,
       name: MAIL_FROM_NAME,
-      replyTo: MAIL_REPLY_TO,
       subject: 'Your message in the book for Hadi',
       body: 'Here ' + (mine.length > 1 ? 'are your messages' : 'is your message') +
             ' in the book for Hadi.\n\nOpen the link below to change or remove what you wrote:\n\n' +
@@ -302,7 +304,6 @@ function sendEditLink_(rec, folio) {
     MailApp.sendEmail({
       to: rec.email,
       name: MAIL_FROM_NAME,
-      replyTo: MAIL_REPLY_TO,
       subject: 'Thank you \u2014 your message is in the book for Hadi',
       body: 'Thank you for writing in the book for Hadi Mohammadi.\n\n' +
             'Your message is leaf ' + folio + '.\n\n' +
