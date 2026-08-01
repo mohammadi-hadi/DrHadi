@@ -368,6 +368,12 @@ a:hover { text-decoration-thickness: 2px; }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 var(--sp-3); }
 @media (max-width: 34rem) { .grid2 { grid-template-columns: 1fr; } }
 
+.photo-note {
+  border-inline-start: 3px solid var(--yellow);
+  padding-inline-start: var(--sp-3);
+  margin-block: var(--sp-4);
+}
+
 .hp { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); }
 
 .proof { margin-block: var(--sp-4); padding: var(--sp-4); background: var(--paper); border: 1px solid var(--rule); }
