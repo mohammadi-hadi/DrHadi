@@ -100,11 +100,16 @@ function detectLang_(s) {
 /** Spoken short code, readable down a phone line in NL / EN / FA. */
 var WORDS = ['KOFFIE','TULP','ANKER','KANAAL','BRUG','FIETS','APPEL','MOLEN','TOREN','VUUR',
              'MAAN','STER','RIVIER','BOEK','LAMP','SLEUTEL','ZOMER','WINTER','NOTEN','HONING',
-             'SAFFRON','JASMIJN','CEDER','GRANAAT','MUNT','ZILVER','KOMPAS','HAVEN','DUIN','WOLK'];
+             'SAFFRAAN','JASMIJN','CEDER','GRANAAT','MUNT','ZILVER','KOMPAS','HAVEN','DUIN','WOLK',
+             'AMANDEL','ABRIKOOS','LINDE','VIJG','DADEL','WALNOOT','KERS','PEER','OLIJF','MIRTE',
+             'ZEIL','ROEIER','VUURTOREN','SCHELP','KIEZEL','VELD','WEIDE','BEEK','MEER','EILAND',
+             'KAARS','SPIEGEL','VENSTER','DREMPEL','TRAP','ZOLDER','TUIN','HEK','PAD','BANK',
+             'INKT','PEN','PAPIER','ZEGEL','LINT','KOORD','NAALD','DRAAD','STOF','WOL'];
 
 function makeCode_(folio) {
-  var w = WORDS[Math.floor(Math.random() * WORDS.length)];
-  return 'HADI-' + folio + '-' + w;
+  var a = WORDS[Math.floor(Math.random() * WORDS.length)];
+  var b = WORDS[Math.floor(Math.random() * WORDS.length)];
+  return 'HADI-' + folio + '-' + a + '-' + b;
 }
 
 // ── ENDPOINTS ────────────────────────────────────────────────────────────────
@@ -244,9 +249,24 @@ function update_(b) {
 
 /** Reopen your own leaf from a secret link or a spoken code. */
 function lookup_(b) {
+  // A spoken code is short by design so it can be read down a phone line.
+  // That makes it guessable, so wrong guesses are counted per leaf and cut off
+  // long before anyone could work through the combinations. Counting per leaf
+  // rather than globally means one person's guessing cannot lock out everyone.
+  var code = String(b.code || '').trim().toUpperCase();
+  var cache = CacheService.getScriptCache();
+  var bucket = null;
+  if (!b.token && code) {
+    bucket = 'guess_' + code.split('-').slice(0, 2).join('-');
+    if (Number(cache.get(bucket) || 0) >= 10) return { ok: false, error: 'toomany' };
+  }
+
   var r = findByToken_(b);
-  if (!r) return { ok: false, error: 'notfound' };
-  if (String(r.status) === 'hidden') return { ok: false, error: 'notfound' };
+  if (!r || String(r.status) === 'hidden') {
+    if (bucket) cache.put(bucket, String(Number(cache.get(bucket) || 0) + 1), 3600);
+    return { ok: false, error: 'notfound' };
+  }
+  if (bucket) cache.remove(bucket);
   return {
     ok: true,
     leaf: {
