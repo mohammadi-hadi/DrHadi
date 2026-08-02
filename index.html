@@ -14,10 +14,14 @@
      immediately in Georgia and swap to Merriweather if and when the fonts land,
      rather than showing a blank page while a request times out. -->
 <link rel="stylesheet" media="print" onload="this.media='all';this.onload=null"
-      href="https://fonts.googleapis.com/css2?family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Open+Sans:wdth,wght@75..100,300..800&family=Vazirmatn:wght@100..900&display=swap">
+      href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300..900;1,300..900&family=Open+Sans:wdth,wght@75..100,300..800&family=Vazirmatn:wght@100..900&display=swap">
 <noscript><link rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Open+Sans:wdth,wght@75..100,300..800&family=Vazirmatn:wght@100..900&display=swap"></noscript>
+      href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300..900;1,300..900&family=Open+Sans:wdth,wght@75..100,300..800&family=Vazirmatn:wght@100..900&display=swap"></noscript>
 <link rel="stylesheet" href="assets/book.css">
+<!-- If this script runs, JS is alive and may hide things. If it does not, the
+     book stays visible instead of leaving the reader a blank white page. -->
+<script>document.documentElement.className += ' js';</script>
+<style>.js #book[data-gated] { display: none; }</style>
 <link rel="stylesheet" href="assets/print.css" media="print">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%233B2A1C'/><rect x='13' y='4' width='6' height='24' fill='%23FFCD00'/></svg>">
 </head>
@@ -56,7 +60,7 @@
 </div>
 
 <!-- ══ THE BOOK ═════════════════════════════════════════════════════════ -->
-<main id="book" class="book" hidden>
+<main id="book" class="book" data-gated>
 
 <!-- ── Title page ───────────────────────────────────────────────────── -->
 <section class="spread titlepage o-title" id="title">
@@ -87,9 +91,9 @@
       <source type="image/webp" srcset="assets/img/senaatszaal-hall-480.webp 480w,
                                         assets/img/senaatszaal-hall-960.webp 960w,
                                         assets/img/senaatszaal-hall-1600.webp 1600w"
-              sizes="(min-width: 68rem) 68rem, 100vw">
+              sizes="(min-width: 68rem) 68rem, 75vw">
       <img src="assets/img/senaatszaal-hall-1600.jpg" width="2400" height="1600"
-           loading="eager" decoding="async" alt="The wall of professorial portraits in the Senaatszaal, above dark oak panelling and a herringbone parquet floor.">
+           loading="lazy" fetchpriority="low" decoding="async" alt="The wall of professorial portraits in the Senaatszaal, above dark oak panelling and a herringbone parquet floor.">
     </picture>
     <figcaption>
       <span class="plate__num">Plate I</span>
@@ -131,7 +135,7 @@
       <source type="image/webp" srcset="assets/img/senaatszaal-bench-480.webp 480w,
                                         assets/img/senaatszaal-bench-960.webp 960w,
                                         assets/img/senaatszaal-bench-1600.webp 1600w"
-              sizes="(min-width: 68rem) 68rem, 100vw">
+              sizes="(min-width: 68rem) 68rem, 75vw">
       <img src="assets/img/senaatszaal-bench-1600.jpg" width="2400" height="1600"
            loading="lazy" decoding="async" alt="The examiners bench draped in crimson velvet, with the carved oak lectern where the candidate stands.">
     </picture>
@@ -173,7 +177,7 @@
       <source type="image/webp" srcset="assets/img/senaatszaal-seat-480.webp 480w,
                                         assets/img/senaatszaal-seat-960.webp 960w,
                                         assets/img/senaatszaal-seat-1600.webp 1600w"
-              sizes="(min-width: 68rem) 68rem, 100vw">
+              sizes="(min-width: 68rem) 68rem, 75vw">
       <img src="assets/img/senaatszaal-seat-1600.jpg" width="2400" height="1600"
            loading="lazy" decoding="async" alt="The Senaatszaal seen from a guest seat: rows of chairs facing the carved chimneypiece, the examiners bench and the lectern, under a constellation of pendant lights.">
     </picture>
@@ -220,10 +224,11 @@
       <button class="chip" data-lang="nl" type="button">Dutch</button>
       <button class="chip" data-lang="fa" type="button">Persian</button>
     </div>
+    <p class="sub" id="leaves-status" role="status" aria-live="polite"></p>
   </div>
 </section>
 
-<div class="leaves o-leaves" id="leaves" aria-live="polite">
+<div class="leaves o-leaves" id="leaves">
   <p class="loading" id="loading">Opening the book…</p>
 </div>
 

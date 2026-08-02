@@ -1,6 +1,9 @@
 /* ═══════════════════════════════════════════════════════════════════════
    Print — A5 interior for the physical book.
-   Chrome/Edge → Print → paper A5, margins Default, Background graphics ON.
+   Chrome/Edge → Print → Destination "Save as PDF", paper A5,
+   Margins "Default", "Headers and footers" OFF, "Background graphics" ON.
+   Headers and footers is ON by default and is NOT controlled by this file —
+   left on, Chrome stamps the page URL, including the password, on every sheet.
    No bleed: `bleed:` and `marks:` are Paged Media properties Chrome does
    not implement, so nothing runs full-bleed. Everything sits inside the
    margins by design.
@@ -12,19 +15,23 @@
 }
 @page :left {
   margin: 20mm 22mm 22mm 15mm;
-  @top-left    { content: 'LIBER AMICORUM'; font: 600 8pt 'Open Sans'; letter-spacing: .14em; color: #5A5145; }
-  @bottom-left { content: counter(page); font: 9pt 'Merriweather'; color: #5A5145; }
+  @top-left    { content: 'LIBER AMICORUM'; font: 600 8pt 'Open Sans'; letter-spacing: .14em; color: #595959; }
+  @bottom-left { content: counter(page); font: 9pt 'Merriweather'; color: #595959; }
 }
 @page :right {
-  @top-right    { content: 'UTRECHT · MMXXVI'; font: 600 8pt 'Open Sans'; letter-spacing: .14em; color: #5A5145; }
-  @bottom-right { content: counter(page); font: 9pt 'Merriweather'; color: #5A5145; }
+  @top-right    { content: 'UTRECHT · MMXXVI'; font: 600 8pt 'Open Sans'; letter-spacing: .14em; color: #595959; }
+  @bottom-right { content: counter(page); font: 9pt 'Merriweather'; color: #595959; }
 }
-@page :first { margin: 0; @top-left { content: none } @bottom-left { content: none } }
+@page :first {
+  margin: 34mm 15mm 22mm 22mm;
+  @top-left { content: none }    @top-right { content: none }
+  @bottom-left { content: none } @bottom-right { content: none }
+}
 
 /* A printed book is always ivory and ink — reset every token. */
 :root {
   --paper: #FAFAF7 !important; --paper-2: #F2F1EC !important;
-  --ink: #1A1A1A !important;   --ink-soft: #5A5145 !important;
+  --ink: #000000 !important;   --ink-soft: #595959 !important;
   --rule: #E3E1DC !important;  --red: #C00A35 !important;
   --cream: #FFE6AB !important; --yellow: #FFCD00 !important;
 }
@@ -41,7 +48,7 @@
 .leaf__photos:has(img:only-child) { grid-template-columns: 1fr; }
 
 html { font-size: 10.5pt; }
-body { background: #FBF9F4; color: #14110C; }
+body { background: none; color: #000; }
 
 /* Screen-only furniture. #attending goes too: a form deadline that has passed
    has no place in a keepsake, and neither does a button. */
@@ -64,18 +71,25 @@ form, dialog, #loading, .sheet__close-form,
 .leaf {
   border-inline-start: 0 !important; padding-inline-start: 0 !important;
   opacity: 1 !important; transform: none !important;
-  break-inside: avoid; orphans: 3; widows: 3;
+  break-inside: auto; orphans: 3; widows: 3;
   margin-block-end: 12mm;
 }
-.leaf__folio { color: #C00A35 !important; }
+.leaf__folio { color: #C00A35 !important; break-after: avoid; }
+.leaf__sig   { break-before: avoid; }
+
+/* Arabic script must not be letterspaced or uppercased in print either. */
+[lang="fa"] .leaf__name, [dir="rtl"] .leaf__name,
+[lang="fa"] .leaf__folio, [dir="rtl"] .leaf__folio {
+  letter-spacing: 0; text-transform: none;
+}
 
 h1, h2, h3 { break-after: avoid; }
 .titlepage, #liber, #colophon { break-before: right; }
-.plate-section { break-before: page; background: #FBF9F4 !important; padding: 0 !important; }
+.plate-section { break-before: page; background: none !important; padding: 0 !important; }
 .plate img { filter: grayscale(1) contrast(1.06) !important; max-inline-size: 100%; }
 .plate picture::after { display: none; }
 .plate figcaption { color: #5A5145 !important; padding: 0 !important; margin-inline: 0; }
-.plate figcaption strong { color: #14110C !important; }
+.plate__label { color: #000 !important; }
 .plate__num, .plate .credit { color: #5A5145 !important; }
 
 .band { background: #FFCD00 !important; color: #000 !important; padding: 8mm 0 !important; }

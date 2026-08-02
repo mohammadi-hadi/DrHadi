@@ -74,12 +74,14 @@ function matchPass(v) {
   return String(v == null ? '' : v).trim().toLowerCase() === GATE_PASSWORD;
 }
 
+function openBook() { $('#book').removeAttribute('data-gated'); }
+
 function unlock(animate) {
   try { localStorage.setItem(LS_AUTH, '1'); } catch (e) {}
   var gate = $('#gate');
   var show = function () {
     gate.hidden = true;
-    $('#book').hidden = false;
+    openBook();
     load();
     handleDeepLink();
   };
@@ -96,7 +98,7 @@ function initGate() {
 
   if (matchPass(params.get('k')) || authed) {
     $('#gate').hidden = true;
-    $('#book').hidden = false;
+    openBook();
     load();
     handleDeepLink();
     try { localStorage.setItem(LS_AUTH, '1'); } catch (e) {}
@@ -201,6 +203,9 @@ function render() {
     return;
   }
   box.innerHTML = list.map(leafHTML).join('');
+  var where = { all: '', en: ' in English', nl: ' in Dutch', fa: ' in Persian' }[state.filter] || '';
+  var st = $('#leaves-status');
+  if (st) st.textContent = list.length + (list.length === 1 ? ' message' : ' messages') + where + '.';
   observe();
 }
 
@@ -349,6 +354,16 @@ function flushQueue() {
   q.forEach(function (p) { call(p).catch(function () { queue(p); }); });
 }
 
+/** Move focus to a panel that has just replaced the form, so a screen reader
+ *  announces it and the keyboard does not land nowhere. */
+function focusPanel(sel) {
+  var h = $(sel);
+  if (!h) return;
+  h.setAttribute('tabindex', '-1');
+  try { h.focus(); } catch (e) {}
+  var d = $('#sheet'); if (d) d.scrollTop = 0;
+}
+
 function showExLibris(r) {
   var url = location.origin + location.pathname + '?k=' + encodeURIComponent(GATE_PASSWORD) +
             '&t=' + encodeURIComponent(r.token);
@@ -358,6 +373,7 @@ function showExLibris(r) {
   $('#write-form').hidden = true;
   $('#find-form').hidden = true;
   $('#exlibris').hidden = false;
+  focusPanel('#exlibris');
 }
 
 function submitWrite(e) {
@@ -465,6 +481,7 @@ function submitFind(e) {
     // otherwise this form tells strangers who is in the book.
     $('#find-form').hidden = true;
     $('#sent').hidden = false;
+    focusPanel('#sent');
   }).catch(function () {
     btn.disabled = false; btn.textContent = 'Email me my link';
     err.textContent = 'That did not work. Please try again in a moment.';
@@ -540,6 +557,10 @@ function init() {
   $('#ex-done').addEventListener('click', function () { $('#sheet').close(); });
   $('#sent-done').addEventListener('click', function () { $('#sheet').close(); });
   $('#code-btn').addEventListener('click', submitCode);
+  // Enter in the code box must open the message, not send the email form
+  $('#f-code').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { e.preventDefault(); submitCode(); }
+  });
 
   $('#leaves').addEventListener('click', function (e) {
     var b = e.target.closest('[data-edit]');

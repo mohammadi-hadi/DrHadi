@@ -57,7 +57,6 @@ body {
   background: var(--paper);
   color: var(--ink);
   font-family: var(--serif);
-  font-variation-settings: 'opsz' 20;
   font-size: var(--t0);
   line-height: 1.62;
   font-variant-numeric: oldstyle-nums proportional-nums;
@@ -108,8 +107,8 @@ body {
 
 /* ── Type ─────────────────────────────────────────────────────────────── */
 h1, h2, h3 { font-family: var(--serif); font-weight: 300; text-wrap: pretty; margin: 0 0 var(--sp-3); }
-h2 { font-size: clamp(1.5rem, 4vw, var(--t3)); font-variation-settings: 'opsz' 96; line-height: 1.2; }
-h3 { font-size: var(--t2); font-variation-settings: 'opsz' 48; margin-block-start: var(--sp-5); }
+h2 { font-size: clamp(1.5rem, 4vw, var(--t3)); line-height: 1.2; }
+h3 { font-size: var(--t2); margin-block-start: var(--sp-5); }
 
 p { margin: 0 0 var(--sp-4); max-inline-size: var(--measure); hyphens: manual; }
 .lead { font-size: var(--t1); line-height: 1.55; }
@@ -128,7 +127,7 @@ a:hover { text-decoration-thickness: 2px; }
 .rule--wide { max-inline-size: 100%; }
 
 .horaest {
-  font-size: var(--t2); font-variation-settings: 'opsz' 72; font-style: italic;
+  font-size: var(--t2); font-style: italic;
   text-align: end; color: var(--ink-soft); margin-block-start: var(--sp-5);
 }
 
@@ -147,7 +146,7 @@ a:hover { text-decoration-thickness: 2px; }
 
 /* ── Gate ─────────────────────────────────────────────────────────────── */
 .gate {
-  min-height: 100dvh; background: var(--walnut);
+  min-height: 100vh; min-height: 100dvh; background: var(--walnut);
   display: grid; place-items: center; padding: var(--sp-4);
 }
 .bookmark {
@@ -169,7 +168,7 @@ a:hover { text-decoration-thickness: 2px; }
   letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft); margin: 0 0 var(--sp-2);
 }
 .bookmark__title {
-  font-size: clamp(1.6rem, 7vw, 2.1rem); font-variation-settings: 'opsz' 144, 'wght' 300;
+  font-size: clamp(1.6rem, 7vw, 2.1rem);
   line-height: 1.1; margin: 0 0 var(--sp-2);
 }
 .bookmark__sub { font-size: var(--t-1); font-style: italic; color: var(--ink-soft); margin: 0 0 var(--sp-3); }
@@ -190,7 +189,7 @@ a:hover { text-decoration-thickness: 2px; }
   letter-spacing: .3em; text-transform: uppercase; color: var(--ink-soft);
 }
 .tp__title {
-  font-size: clamp(2.25rem, 9vw, var(--t5)); font-variation-settings: 'opsz' 144, 'wght' 300;
+  font-size: clamp(2.25rem, 9vw, var(--t5));
   line-height: 1.05; margin: var(--sp-5) 0 var(--sp-3);
 }
 .tp__sub { font-size: var(--t1); color: var(--ink-soft); }
@@ -340,6 +339,13 @@ a:hover { text-decoration-thickness: 2px; }
 }
 [dir="rtl"] .leaf__sig, [dir="rtl"] .leaf__body { text-align: start; }
 
+/* Arabic script joins its letters; spacing them apart breaks the word, and
+   there is no such thing as an uppercase Persian name. */
+[lang="fa"] .leaf__name, [dir="rtl"] .leaf__name,
+[lang="fa"] .leaf__folio, [dir="rtl"] .leaf__folio {
+  letter-spacing: 0; text-transform: none; font-family: 'Vazirmatn', serif;
+}
+
 :lang(en) { quotes: '\201C' '\201D'; }
 :lang(nl) { quotes: '\201E' '\201D'; }
 :lang(fa) { quotes: '\00AB' '\00BB'; }
@@ -353,7 +359,8 @@ a:hover { text-decoration-thickness: 2px; }
 .sheet {
   border: 0; padding: 0; background: var(--paper-2); color: var(--ink);
   inline-size: min(42rem, 100%); max-inline-size: 100%;
-  max-block-size: 92dvh; margin: auto;
+  overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
+  max-block-size: 92vh; max-block-size: 92dvh; margin: auto;
   box-shadow: 0 -12px 32px rgba(20,17,12,.18);
 }
 .sheet::backdrop { background: rgba(20,17,12,.62); }
@@ -363,10 +370,18 @@ a:hover { text-decoration-thickness: 2px; }
   background: none; border: 0; font-size: 2rem; line-height: 1; color: var(--ink-soft);
   cursor: pointer; padding: .35rem .7rem; min-height: 44px; min-width: 44px;
 }
-.sheet__title { font-size: var(--t3); font-variation-settings: 'opsz' 72; margin-block-start: 0; }
+.sheet__title { font-size: var(--t3); margin-block-start: 0; }
 .sheet__intro { font-size: var(--t-1); color: var(--ink-soft); }
 .sheet__error { color: var(--red); font-size: var(--t-1); }
-.sheet__actions { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-block-start: var(--sp-4); }
+/* Pinned to the bottom of the dialog so the send button is never stranded
+   under a phone keyboard — this is the moment the whole book depends on. */
+.sheet__actions {
+  display: flex; flex-wrap: wrap; gap: var(--sp-2);
+  margin-block-start: var(--sp-4);
+  position: sticky; bottom: 0; z-index: 2;
+  padding-block: var(--sp-3);
+  background: linear-gradient(to top, var(--paper-2) 70%, transparent);
+}
 
 .field { display: block; margin-block-end: var(--sp-3); }
 .field__label {
@@ -384,8 +399,7 @@ a:hover { text-decoration-thickness: 2px; }
 
 /* Compose inside the book's own typography, ruled at the baseline */
 .composer {
-  font-size: var(--t0) !important; line-height: var(--baseline);
-  font-variation-settings: 'opsz' 20; resize: vertical;
+  font-size: var(--t0) !important; line-height: var(--baseline); resize: vertical;
   background:
     repeating-linear-gradient(var(--paper) 0, var(--paper) calc(var(--baseline) - 1px),
                               var(--rule) calc(var(--baseline) - 1px), var(--rule) var(--baseline));
@@ -418,7 +432,7 @@ a:hover { text-decoration-thickness: 2px; }
   font-family: var(--sans); font-size: var(--t-3); font-weight: 700; font-stretch: 75%;
   letter-spacing: .3em; text-transform: uppercase; margin: 0 0 var(--sp-3);
 }
-.exlibris__title { font-size: var(--t3); font-variation-settings: 'opsz' 72; margin: 0 0 var(--sp-3); }
+.exlibris__title { font-size: var(--t3); margin: 0 0 var(--sp-3); }
 .exlibris p { margin-inline: auto; }
 .exlibris__box {
   background: var(--paper); border: 1px solid var(--rule); padding: var(--sp-4);
