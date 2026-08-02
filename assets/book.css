@@ -233,26 +233,38 @@ a:hover { text-decoration-thickness: 2px; }
 :focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
 
 .cta { display: flex; flex-wrap: wrap; gap: var(--sp-2); align-items: center; margin-block: var(--sp-5); }
+
+.btn--big {
+  font-size: var(--t1);
+  padding: 1rem 1.75rem;
+  min-height: 56px;
+}
+
+/* The invitation to write is the loudest thing in the book, and the only place
+   the yellow is allowed to sit behind type — on black, at 15:1 contrast. */
+.cta--hero { gap: var(--sp-3); margin-block: var(--sp-5) var(--sp-6); }
+.cta--hero .btn--solid {
+  background: var(--yellow); color: var(--black); border-color: var(--yellow);
+}
+.cta--hero .btn--solid:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .cta--hero .btn--solid { color: #000; }
+}
 .cta--tail { flex-direction: column; align-items: start; }
 .tail { margin-block-end: var(--sp-2); }
 
 /* ── Plate ────────────────────────────────────────────────────────────── */
-.plate-section { background: var(--navy); padding: var(--sp-5) 0 var(--sp-6); }
+.plate-section { background: var(--walnut); padding: var(--sp-5) 0 var(--sp-6); }
 .plate { margin: 0; }
 .plate picture { display: block; position: relative; }
 .plate picture { display: block; max-inline-size: 68rem; margin-inline: auto; position: relative; }
 .plate img {
   display: block; inline-size: 100%; block-size: auto;
   aspect-ratio: 3 / 2; max-block-size: 74vh; object-fit: cover;
-  filter: grayscale(1) contrast(1.04) brightness(1.06);
+  filter: saturate(1.04) contrast(1.02);
 }
-/* Duotone without mix-blend-mode: blend modes are the least predictable thing
-   in CSS across old phones, and this page has to work on them. A flat navy
-   wash over a greyscale image gives the same look with none of the risk. */
-.plate picture::after {
-  content: ''; position: absolute; inset: 0; pointer-events: none;
-  background: linear-gradient(rgba(0, 18, 64, .26), rgba(0, 18, 64, .26));
-}
+/* Photographs run in full colour. No blend modes anywhere: they are the least
+   predictable thing in CSS on older phones, and this page has to work on them. */
 .plate figcaption {
   color: var(--cream); font-size: var(--t-1); line-height: 1.6;
   max-inline-size: 44rem; margin: var(--sp-4) auto 0;
