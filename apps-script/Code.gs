@@ -313,7 +313,7 @@ function requestEdit_(b) {
       body: 'Here ' + (mine.length > 1 ? 'are your messages' : 'is your message') +
             ' in the book for Hadi.\n\nOpen the link below to change or remove what you wrote:\n\n' +
             lines + '\n\nAnyone with this link can edit it, so please keep it to yourself.\n' +
-            'You can make changes until 30 September, when the book goes to the printer.\n'
+            'You can make changes until 30 August, when the book goes to the printer.\n'
     });
   }
   return { ok: true, sent: true };
@@ -333,7 +333,7 @@ function sendEditLink_(rec, folio) {
             'If you would like to change or remove it, use this link:\n' +
             editUrl_(rec.token) + '\n\n' +
             'Or give this code to Mehran or Mohammad: ' + rec.code + '\n\n' +
-            'You can make changes until 30 September, when the book goes to the printer.\n'
+            'You can make changes until 30 August, when the book goes to the printer.\n'
     });
   } catch (err) { /* a mail failure must never cost someone their message */ }
 }

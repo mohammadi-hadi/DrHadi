@@ -276,9 +276,9 @@ function setMode(isEdit, leaf) {
   $('#email-field').hidden = isEdit;
   $('#sheet-title').textContent = isEdit ? 'Change what you wrote' : 'Write your message';
   $('#sheet-intro').textContent = isEdit
-    ? 'Change anything you like, until 30 September.'
+    ? 'Change anything you like, until 30 August.'
     : 'A few lines is plenty — in English, Dutch or Persian. ' +
-      'You can come back and change it until 30 September.';
+      'You can come back and change it until 30 August.';
   $('#submit-btn').textContent = isEdit ? 'Save my changes' : 'Send my message';
   $('#remove-btn').hidden = !isEdit;
   var known = leaf && state.leaves.filter(function (l) { return l.id === leaf.id; })[0];
