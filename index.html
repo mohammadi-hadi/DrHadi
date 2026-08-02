@@ -9,7 +9,14 @@
 <meta name="description" content="A book of friends for the PhD defence of Hadi Mohammadi, 9 September 2026, Academiegebouw Utrecht.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Open+Sans:wdth,wght@75..100,300..800&family=Vazirmatn:wght@100..900&display=swap">
+<!-- Loaded without blocking the page. Google's font host is slow or unreachable
+     in some countries these guests are reading from; the book must appear
+     immediately in Georgia and swap to Merriweather if and when the fonts land,
+     rather than showing a blank page while a request times out. -->
+<link rel="stylesheet" media="print" onload="this.media='all';this.onload=null"
+      href="https://fonts.googleapis.com/css2?family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Open+Sans:wdth,wght@75..100,300..800&family=Vazirmatn:wght@100..900&display=swap">
+<noscript><link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Open+Sans:wdth,wght@75..100,300..800&family=Vazirmatn:wght@100..900&display=swap"></noscript>
 <link rel="stylesheet" href="assets/book.css">
 <link rel="stylesheet" href="assets/print.css" media="print">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%233B2A1C'/><rect x='13' y='4' width='6' height='24' fill='%23FFCD00'/></svg>">

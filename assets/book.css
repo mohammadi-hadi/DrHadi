@@ -23,8 +23,8 @@
   --ink-soft:#5A5145;
   --rule:    #E3E1DC;   /* same rule as mohammadi.cv */
 
-  --serif: 'Merriweather', 'Vazirmatn', Georgia, serif;
-  --sans:  'Open Sans', 'Vazirmatn', system-ui, sans-serif;
+  --serif: 'Merriweather', 'Vazirmatn', Georgia, 'Times New Roman', serif;
+  --sans:  'Open Sans', 'Vazirmatn', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
   --baseline: 1.625rem;
   --sp-1: .40625rem; --sp-2: .8125rem; --sp-3: 1.21875rem; --sp-4: 1.625rem;
