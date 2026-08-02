@@ -20,6 +20,7 @@ var $ = function (s, r) { return (r || document).querySelector(s); };
 var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
 
 var state = { leaves: [], filter: 'all', editing: null, editFolio: null, openedAt: 0 };
+var trapTyped = false;   // browser autofill must not count as a bot
 
 // ── API ──────────────────────────────────────────────────────────────────
 function call(payload) {
@@ -319,6 +320,7 @@ function updateProof() {
 }
 
 function saveDraft() {
+  if (state.editing) return;   // only ever keep a draft of an unsent message
   try {
     localStorage.setItem(LS_DRAFT, JSON.stringify({
       name: $('#f-name').value, relation: $('#f-relation').value,
@@ -346,12 +348,26 @@ function queue(payload) {
     localStorage.setItem('liber.queue', JSON.stringify(q));
   } catch (e) {}
 }
+var flushing = false;
 function flushQueue() {
+  if (flushing) return;
   var q;
   try { q = JSON.parse(localStorage.getItem('liber.queue') || '[]'); } catch (e) { return; }
   if (!q.length) return;
-  localStorage.setItem('liber.queue', '[]');
-  q.forEach(function (p) { call(p).catch(function () { queue(p); }); });
+  flushing = true;
+  var left = q.slice(), pending = q.length;
+  var save = function () {
+    try { localStorage.setItem('liber.queue', JSON.stringify(left)); } catch (e) {}
+  };
+  // Each entry is removed only once the server has confirmed it. Closing the
+  // tab mid-flush therefore loses nothing.
+  q.forEach(function (p) {
+    call(p).then(function (r) {
+      if (r && r.ok) { left = left.filter(function (x) { return x !== p; }); save(); }
+    }).catch(function () {}).then(function () {
+      if (--pending === 0) { flushing = false; load(); }
+    });
+  });
 }
 
 /** Move focus to a panel that has just replaced the form, so a screen reader
@@ -399,7 +415,7 @@ function submitWrite(e) {
     body: body,
     email: email,
     lang: detectLang(body),
-    hp: $('#f-hp').value,
+    hp: trapTyped ? $('#f-hp').value : '',
     elapsed: Date.now() - state.openedAt,
     ua: navigator.userAgent
   };
@@ -410,11 +426,21 @@ function submitWrite(e) {
 
   var req = state.editing
     ? callRetry(Object.assign({ action: 'update', token: state.editing }, payload))
-    : callRetry(Object.assign({ action: 'create' }, payload));
+    : call(Object.assign({ action: 'create' }, payload));   // never retried: it would print them twice
 
   req.then(function (r) {
     btn.disabled = false;
     btn.textContent = state.editing ? 'Save my changes' : 'Send my message';
+    // The server answers a sprung trap with {ok:true, folio:0, token:'x'} and
+    // keeps nothing. Never show that as success, and never drop the draft.
+    if (r && r.ok && !state.editing && (r.token === 'x' || r.folio === 0)) {
+      err.innerHTML = 'Something went wrong at our end. <strong>Your words are still in the box ' +
+        'above</strong> — please copy them, or email them to ' +
+        '<a href="mailto:hadimh.93@gmail.com?subject=My%20message%20for%20the%20book">' +
+        'hadimh.93@gmail.com</a>, so nothing is lost.';
+      err.hidden = false;
+      return;
+    }
     if (!r || !r.ok) {
       err.textContent = r && r.error === 'too fast'
         ? 'Please take a moment longer, then try again.'
@@ -504,10 +530,7 @@ function submitCode() {
     state.editing = r.token;
     remember(r.token);
     rememberId(r.leaf.id, r.token);
-    $('#sheet-title').textContent = 'Change what you wrote';
-    $('#sheet-intro').textContent = 'Change anything you like. The book has not gone to the printer yet.';
-    $('#submit-btn').textContent = 'Save my changes';
-    $('#remove-btn').hidden = false;
+    setMode(true, r.leaf);
     fillForm(r.leaf);
     openSheet('write');
   });
@@ -542,9 +565,20 @@ function init() {
 
   $('#remove-btn').addEventListener('click', function () {
     if (!state.editing) return;
-    if (!confirm('Remove your leaf from the book?')) return;
-    callRetry({ action: 'update', token: state.editing, remove: true }).then(function () {
+    if (!confirm('Remove your message from the book? This cannot be undone.')) return;
+    var e2 = $('#write-error');
+    e2.hidden = true;
+    callRetry({ action: 'update', token: state.editing, remove: true }).then(function (r) {
+      if (!r || !r.ok) {
+        e2.textContent = 'That did not remove. Please try again, or email hadimh.93@gmail.com ' +
+          'and it will be taken out by hand.';
+        e2.hidden = false; return;
+      }
       state.editing = null; $('#sheet').close(); load();
+    }).catch(function () {
+      e2.textContent = 'We could not reach the book just now. Nothing has changed — ' +
+        'please try again in a moment.';
+      e2.hidden = false;
     });
   });
 
@@ -556,6 +590,8 @@ function init() {
 
   $('#ex-done').addEventListener('click', function () { $('#sheet').close(); });
   $('#sent-done').addEventListener('click', function () { $('#sheet').close(); });
+  // leaving the dialog must not leave us stuck in edit mode
+  $('#sheet').addEventListener('close', function () { state.editing = null; state.editFolio = null; });
   $('#code-btn').addEventListener('click', submitCode);
   // Enter in the code box must open the message, not send the email form
   $('#f-code').addEventListener('keydown', function (e) {
@@ -578,6 +614,7 @@ function init() {
     });
   });
 
+  $('#f-hp').addEventListener('input', function () { trapTyped = true; });
   window.addEventListener('online', flushQueue);
 }
 
