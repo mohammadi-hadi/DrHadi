@@ -111,7 +111,8 @@ function initGate() {
       unlock(true);
     } else {
       var err = $('#gate-error');
-      err.textContent = 'That is not the key.';
+      err.innerHTML = 'That password is not right. It is in the email that brought you here \u2014 ' +
+        'or ask <a href="mailto:hadimh.93@gmail.com?subject=Password%20for%20the%20book">Hadi</a>.';
       err.hidden = false;
       $('#gate-pass').value = '';
       $('#gate-pass').focus();
@@ -191,7 +192,7 @@ function render() {
   });
 
   if (!state.leaves.length) {
-    box.innerHTML = '<p class="empty">The book is still empty. Yours would be the first leaf — ' +
+    box.innerHTML = '<p class="empty">Nobody has written yet. Yours would be the first message — ' +
       'and being first in a book is worth something.</p>';
     return;
   }
@@ -221,10 +222,10 @@ function load() {
     if (!r || !r.ok) throw new Error('list failed');
     state.leaves = r.leaves || [];
     $('#loading') && ($('#loading').hidden = true);
-    $('#filters').hidden = false;
     // The second "write" button only earns its place once there are leaves
     // above it; otherwise it sits inches below the first and reads as a bug.
-    $('#tail-cta').hidden = state.leaves.length < 3;
+    $('#tail-cta').hidden = false;          // the ask must always be reachable
+    $('#filters').hidden = state.leaves.length < 4;
     $('#count').textContent = r.stats.leaves;
     $('#stat-leaves').textContent = r.stats.leaves;
     $('#stat-langs').textContent = r.stats.langs;
@@ -255,7 +256,7 @@ function openSheet(mode) {
   var d = $('#sheet');
   if (!d.open) d.showModal();
   setTimeout(function () {
-    var f = mode === 'find' ? $('#f-find-email') : $('#f-name');
+    var f = mode === 'find' ? $('#f-find-email') : $('#f-body');
     f && f.focus();
   }, 60);
 }
@@ -267,12 +268,12 @@ function setMode(isEdit, leaf) {
   var email = $('#f-email');
   email.required = !isEdit;
   $('#email-field').hidden = isEdit;
-  $('#sheet-title').textContent = isEdit ? 'Change what you wrote' : 'Write your leaf';
+  $('#sheet-title').textContent = isEdit ? 'Change what you wrote' : 'Write your message';
   $('#sheet-intro').textContent = isEdit
     ? 'Change anything you like, until 30 September.'
     : 'A few lines is plenty — in English, Dutch or Persian. ' +
       'You can come back and change it until 30 September.';
-  $('#submit-btn').textContent = isEdit ? 'Save my changes' : 'Bind my leaf in';
+  $('#submit-btn').textContent = isEdit ? 'Save my changes' : 'Send my message';
   $('#remove-btn').hidden = !isEdit;
   var known = leaf && state.leaves.filter(function (l) { return l.id === leaf.id; })[0];
   state.editFolio = known ? known.folio : null;
@@ -351,7 +352,7 @@ function flushQueue() {
 function showExLibris(r) {
   var url = location.origin + location.pathname + '?k=' + encodeURIComponent(GATE_PASSWORD) +
             '&t=' + encodeURIComponent(r.token);
-  $('#ex-folio').textContent = 'leaf ' + r.folio;
+  $('#ex-folio').textContent = r.folio;
   $('#ex-link').value = url;
   $('#ex-code').textContent = r.code;
   $('#write-form').hidden = true;
@@ -389,7 +390,7 @@ function submitWrite(e) {
 
   var btn = $('#submit-btn');
   btn.disabled = true;
-  btn.textContent = state.editing ? 'Saving…' : 'Binding in…';
+  btn.textContent = state.editing ? 'Saving…' : 'Sending…';
 
   var req = state.editing
     ? callRetry(Object.assign({ action: 'update', token: state.editing }, payload))
@@ -397,7 +398,7 @@ function submitWrite(e) {
 
   req.then(function (r) {
     btn.disabled = false;
-    btn.textContent = state.editing ? 'Save my changes' : 'Bind my leaf in';
+    btn.textContent = state.editing ? 'Save my changes' : 'Send my message';
     if (!r || !r.ok) {
       err.textContent = r && r.error === 'too fast'
         ? 'Please take a moment longer, then try again.'
@@ -420,7 +421,7 @@ function submitWrite(e) {
     }
   }).catch(function () {
     btn.disabled = false;
-    btn.textContent = state.editing ? 'Save my changes' : 'Bind my leaf in';
+    btn.textContent = state.editing ? 'Save my changes' : 'Send my message';
     var mailto = '<a href="mailto:mehran1414@gmail.com?subject=' +
       encodeURIComponent('The book for Hadi — my message') +
       '&body=' + encodeURIComponent(body) + '">send it by email instead</a>';

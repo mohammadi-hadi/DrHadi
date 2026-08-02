@@ -41,8 +41,9 @@
       <hr class="rule">
       <label class="field">
         <span class="field__label">Password</span>
-        <input type="password" id="gate-pass" name="password" required
+        <input type="text" id="gate-pass" name="password" required
                autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="go">
+        <span class="sub">It is in the email that brought you here.</span>
       </label>
       <p class="gate__error" id="gate-error" role="alert" aria-live="polite" hidden></p>
       <button class="btn btn--solid" type="submit">Open the book</button>
@@ -189,10 +190,11 @@
   <p class="folio">1</p>
   <div class="col">
     <p class="kicker">Book of Friends</p>
-    <h2>Liber Amicorum</h2>
-    <p class="lead">Since the sixteenth century, students in Utrecht and Leiden have kept an
-      <em>album amicorum</em> — a book of friends, in which the people around them wrote a few lines
-      in whatever language they pleased. This is Hadi's. Write something. It will be printed.</p>
+    <h2>Write something for Hadi</h2>
+    <p class="lead">A few lines is plenty — in English, Dutch or Persian. Everything written here is
+      printed in a hardcover book and given to him after the defence.</p>
+    <p class="sub" lang="nl">Schrijf gerust in het Nederlands.<br>
+      <span lang="fa" dir="rtl">به فارسی بنویسید — چند خط کافی است.</span></p>
 
     <div class="cta cta--hero">
       <button class="btn btn--solid btn--big" id="open-write" type="button">
@@ -200,6 +202,16 @@
       </button>
       <button class="btn btn--quiet" id="open-find" type="button">I've already written</button>
     </div>
+
+    <p class="sub">Please write before <strong>Wednesday 30 September 2026</strong> — that is after
+      the defence, so there is still time if you read this late. The book goes to the printer in October.</p>
+    <p class="sub">Rather not use the website? Email your message to
+      <a href="mailto:hadimh.93@gmail.com?subject=A%20message%20for%20the%20book">hadimh.93@gmail.com</a>
+      and it will be written in for you.</p>
+
+    <p class="lead aside-history">Since the sixteenth century, students in Utrecht and Leiden have
+      kept an <em>album amicorum</em> — a book of friends, in which the people around them wrote a
+      few lines in whatever language they pleased. This is Hadi's.</p>
 
     <div class="filters" id="filters" hidden>
       <span class="filters__label">leaves: <span class="num" id="count">0</span></span>
@@ -230,32 +242,32 @@
   </form>
 
   <form id="write-form" class="sheet__form">
-    <h2 class="sheet__title" id="sheet-title">Write your leaf</h2>
+    <h2 class="sheet__title" id="sheet-title">Write your message</h2>
     <p class="sheet__intro" id="sheet-intro">A few lines is plenty — in English, Dutch or Persian.
       You can come back and change it until 30 September.</p>
+
+    <label class="field">
+      <span class="field__label">Your message *</span>
+      <textarea name="body" id="f-body" required rows="9" maxlength="6000"
+                class="composer" enterkeyhint="enter" dir="auto"></textarea>
+    </label>
 
     <div class="grid2">
       <label class="field">
         <span class="field__label">Your name *</span>
-        <input name="name" id="f-name" required maxlength="120" enterkeyhint="next" autocomplete="name">
+        <input name="name" id="f-name" required maxlength="120" enterkeyhint="next" autocomplete="name" dir="auto">
       </label>
       <label class="field">
         <span class="field__label">How you know Hadi</span>
-        <input name="relation" id="f-relation" maxlength="120" enterkeyhint="next"
+        <input name="relation" id="f-relation" maxlength="120" enterkeyhint="next" dir="auto"
                placeholder="colleague, friend, family…">
       </label>
     </div>
 
     <label class="field">
       <span class="field__label">City</span>
-      <input name="city" id="f-city" maxlength="120" enterkeyhint="next"
+      <input name="city" id="f-city" maxlength="120" enterkeyhint="next" dir="auto"
              placeholder="Utrecht, Tehran, Amsterdam…" autocomplete="address-level2">
-    </label>
-
-    <label class="field">
-      <span class="field__label">Your message *</span>
-      <textarea name="body" id="f-body" required rows="9" maxlength="6000"
-                class="composer" enterkeyhint="enter"></textarea>
     </label>
 
     <p class="sub photo-note"><strong>Would you like a photograph beside your message in the printed
@@ -282,15 +294,15 @@
     <p class="sheet__error" id="write-error" role="alert" hidden></p>
 
     <div class="sheet__actions">
-      <button class="btn btn--solid" type="submit" id="submit-btn">Bind my leaf in</button>
-      <button class="btn btn--quiet" type="button" id="remove-btn" hidden>Remove my leaf</button>
+      <button class="btn btn--solid" type="submit" id="submit-btn">Send my message</button>
+      <button class="btn btn--quiet" type="button" id="remove-btn" hidden>Remove my message</button>
     </div>
   </form>
 
   <!-- Ex Libris confirmation -->
   <div id="exlibris" class="exlibris" hidden>
     <p class="exlibris__mark">Ex libris</p>
-    <h2 class="exlibris__title">Your leaf is bound in as <span class="num" id="ex-folio">—</span>.</h2>
+    <h2 class="exlibris__title">Thank you — your message is in the book, on page <span class="num" id="ex-folio">—</span>.</h2>
     <p>Thank you. It will be printed exactly as you wrote it.</p>
     <div class="exlibris__box">
       <p class="field__label">To change it later, keep this link</p>
@@ -325,7 +337,7 @@
 
     <hr class="rule rule--wide">
     <p class="sub">No longer have that inbox? Enter the code you were given instead
-      (it looks like <span class="num">HADI-12-KOFFIE</span>).</p>
+      (it looks like <span class="num">HADI-12-KOFFIE-TULP</span>).</p>
     <label class="field">
       <span class="field__label">Your code</span>
       <input name="code" id="f-code" autocapitalize="characters" spellcheck="false" enterkeyhint="go">
