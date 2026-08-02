@@ -137,6 +137,12 @@ a:hover { text-decoration-thickness: 2px; }
   padding-inline-start: var(--sp-3); margin-block: var(--sp-4);
 }
 
+.aside-history {
+  font-size: var(--t0); color: var(--ink-soft);
+  border-block-start: 1px solid var(--rule);
+  padding-block-start: var(--sp-4); margin-block-start: var(--sp-6);
+}
+
 .credit { display: block; font-size: var(--t-3); color: var(--ink-soft); margin-block-start: var(--sp-2); }
 
 /* ── Gate ─────────────────────────────────────────────────────────────── */
