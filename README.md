@@ -2,7 +2,7 @@
 
 A password-gated keepsake site for the PhD defence of Hadi Mohammadi, Academiegebouw Utrecht,
 Wednesday 9 September 2026. Guests write a message directly on the site and can edit it themselves
-afterwards; everything is printed as an A5 book in October.
+afterwards; everything is printed as an A5 book in time for the defence.
 
 The site is static. The messages live in a Google Sheet behind a Google Apps Script web app, so
 there is no server to run and nothing that sleeps or expires.
@@ -96,9 +96,9 @@ Final typesetting for a press may still want manual touch-up. Give the printer P
 
 ---
 
-## The Freeze — 1 October 2026
+## The Freeze — 31 August 2026
 
-The guestbook closes 30 September. On 1 October:
+The guestbook closes 30 August. On 31 August:
 
 1. Download the Sheet as JSON/CSV and commit it to this repo along with the photos.
 2. Point the site at the static export instead of the API.
