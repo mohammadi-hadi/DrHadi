@@ -23,11 +23,22 @@
 
 /* A printed book is always ivory and ink — reset every token. */
 :root {
-  --paper: #FBF9F4 !important; --paper-2: #F4EEE0 !important;
-  --ink: #14110C !important;   --ink-soft: #5A5145 !important;
-  --rule: #DED3BE !important;  --red: #C00A35 !important;
+  --paper: #FAFAF7 !important; --paper-2: #F2F1EC !important;
+  --ink: #1A1A1A !important;   --ink-soft: #5A5145 !important;
+  --rule: #E3E1DC !important;  --red: #C00A35 !important;
   --cream: #FFE6AB !important; --yellow: #FFCD00 !important;
 }
+
+/* A message and its photographs are one unit — never split them over a page. */
+.leaf__photos {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 4mm;
+  margin-block: 4mm; break-inside: avoid;
+}
+.leaf__photos img {
+  inline-size: 100%; block-size: auto; aspect-ratio: 4 / 3; object-fit: cover;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+}
+.leaf__photos:has(img:only-child) { grid-template-columns: 1fr; }
 
 html { font-size: 10.5pt; }
 body { background: #FBF9F4; color: #14110C; }

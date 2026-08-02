@@ -17,11 +17,11 @@
   --walnut:  #3B2A1C;   /* Senaatszaal panelling */
 
   /* paper & ink */
-  --paper:   #FBF9F4;
+  --paper:   #FAFAF7;   /* same paper as mohammadi.cv */
   --paper-2: #F4EEE0;
-  --ink:     #14110C;
+  --ink:     #1A1A1A;   /* same ink as mohammadi.cv */
   --ink-soft:#5A5145;
-  --rule:    #DED3BE;
+  --rule:    #E3E1DC;   /* same rule as mohammadi.cv */
 
   --serif: 'Merriweather', 'Vazirmatn', Georgia, serif;
   --sans:  'Open Sans', 'Vazirmatn', system-ui, sans-serif;
@@ -254,7 +254,7 @@ a:hover { text-decoration-thickness: 2px; }
 .tail { margin-block-end: var(--sp-2); }
 
 /* ── Plate ────────────────────────────────────────────────────────────── */
-.plate-section { background: var(--walnut); padding: var(--sp-5) 0 var(--sp-6); }
+.plate-section { background: var(--navy); padding: var(--sp-5) 0 var(--sp-6); }
 .plate { margin: 0; }
 .plate picture { display: block; position: relative; }
 .plate picture { display: block; max-inline-size: 68rem; margin-inline: auto; position: relative; }
@@ -306,6 +306,16 @@ a:hover { text-decoration-thickness: 2px; }
   margin: 0 0 var(--sp-2);
 }
 .leaf__body { white-space: pre-wrap; margin: 0 0 var(--sp-3); }
+.leaf__photos {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: var(--sp-2); margin-block: var(--sp-3);
+}
+.leaf__photos img {
+  inline-size: 100%; block-size: auto; display: block;
+  aspect-ratio: 4 / 3; object-fit: cover;
+  background: var(--paper-2);
+}
+
 .leaf__sig { border-block-start: 1px solid var(--rule); padding-block-start: var(--sp-2); margin: 0; }
 .leaf__name { font-size: var(--t-1); letter-spacing: .08em; text-transform: uppercase; }
 .leaf__meta { font-size: var(--t-1); font-style: italic; color: var(--ink-soft); }
