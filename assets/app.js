@@ -150,6 +150,22 @@ function rememberId(id, token) {
 }
 
 // ── Render ───────────────────────────────────────────────────────────────
+/** A photograph is stored as a Drive file id (or a full URL) in the sheet's
+ *  photos column, so pictures can be attached to a message by hand without
+ *  the site needing any access to Drive. */
+function photoSrc(idOrUrl, width) {
+  var v = String(idOrUrl).trim();
+  if (/^https?:/.test(v)) return v;
+  return 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(v) + '&sz=w' + width;
+}
+
+function photosHTML(l) {
+  if (!l.photos || !l.photos.length) return '';
+  return '<div class="leaf__photos">' + l.photos.map(function (p) {
+    return '<img src="' + esc(photoSrc(p, 1200)) + '" loading="lazy" decoding="async" alt="">';
+  }).join('') + '</div>';
+}
+
 function leafHTML(l) {
   var mine = !!myIds()[l.id];
   var rtl = l.lang === 'fa';
@@ -159,6 +175,7 @@ function leafHTML(l) {
     '" data-lang="' + esc(l.lang) + '" data-id="' + esc(l.id) + '">' +
     '<p class="leaf__folio">' + (rtl ? 'برگ ' : 'leaf ') + fmtFolio(l.folio, l.lang) + '</p>' +
     '<div class="leaf__body">' + esc(l.body) + '</div>' +
+    photosHTML(l) +
     '<p class="leaf__sig"><span class="leaf__name">' + esc(l.name) + '</span>' +
     (meta ? '<br><span class="leaf__meta">' + esc(meta) + '</span>' : '') +
     (date ? '<br><span class="leaf__meta">' + esc(date) + '</span>' : '') +
