@@ -73,6 +73,43 @@
   </p>
 </div>
 
+<!-- ── Liber Amicorum ───────────────────────────────────────────────── -->
+<section class="spread" id="liber">
+  <p class="folio">1</p>
+  <div class="col">
+    <p class="kicker">Book of Friends</p>
+    <h2>Liber Amicorum</h2>
+    <p class="lead">Since the sixteenth century, students in Utrecht and Leiden have kept an
+      <em>album amicorum</em> — a book of friends, in which the people around them wrote a few lines
+      in whatever language they pleased. This is Hadi's. Write something. It will be printed.</p>
+
+    <div class="cta cta--hero">
+      <button class="btn btn--solid btn--big" id="open-write" type="button">
+        ✎ Write your message
+      </button>
+      <button class="btn btn--quiet" id="open-find" type="button">I've already written</button>
+    </div>
+
+    <div class="filters" id="filters" hidden>
+      <span class="filters__label">leaves: <span class="num" id="count">0</span></span>
+      <button class="chip is-on" data-lang="all" type="button">all</button>
+      <button class="chip" data-lang="en" type="button">English</button>
+      <button class="chip" data-lang="nl" type="button">Dutch</button>
+      <button class="chip" data-lang="fa" type="button">Persian</button>
+    </div>
+  </div>
+</section>
+
+<div class="leaves" id="leaves" aria-live="polite">
+  <p class="loading" id="loading">Opening the book…</p>
+</div>
+
+<section class="spread" id="tail-cta" hidden>
+  <div class="col cta cta--tail">
+    <button class="btn btn--solid btn--big" id="open-write-2" type="button">✎ Write your message</button>
+  </div>
+</section>
+
 <section class="plate-section">
   <figure class="plate">
     <picture>
@@ -175,43 +212,6 @@
       <span class="credit">Photo: Dick Boetekees / Utrecht University</span>
     </figcaption>
   </figure>
-</section>
-
-<!-- ── Liber Amicorum ───────────────────────────────────────────────── -->
-<section class="spread" id="liber">
-  <p class="folio">1</p>
-  <div class="col">
-    <p class="kicker">Book of Friends</p>
-    <h2>Liber Amicorum</h2>
-    <p class="lead">Since the sixteenth century, students in Utrecht and Leiden have kept an
-      <em>album amicorum</em> — a book of friends, in which the people around them wrote a few lines
-      in whatever language they pleased. This is Hadi's. Write something. It will be printed.</p>
-
-    <div class="cta">
-      <button class="btn btn--solid" id="open-write" type="button">
-        ✎ Write your leaf
-      </button>
-      <button class="btn btn--quiet" id="open-find" type="button">I've already written</button>
-    </div>
-
-    <div class="filters" id="filters" hidden>
-      <span class="filters__label">leaves: <span class="num" id="count">0</span></span>
-      <button class="chip is-on" data-lang="all" type="button">all</button>
-      <button class="chip" data-lang="en" type="button">English</button>
-      <button class="chip" data-lang="nl" type="button">Dutch</button>
-      <button class="chip" data-lang="fa" type="button">Persian</button>
-    </div>
-  </div>
-</section>
-
-<div class="leaves" id="leaves" aria-live="polite">
-  <p class="loading" id="loading">Opening the book…</p>
-</div>
-
-<section class="spread" id="tail-cta" hidden>
-  <div class="col cta cta--tail">
-    <button class="btn btn--solid" id="open-write-2" type="button">✎ Write your leaf</button>
-  </div>
 </section>
 
 </main>
