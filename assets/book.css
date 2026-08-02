@@ -433,3 +433,32 @@ a:hover { text-decoration-thickness: 2px; }
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
   .leaf { opacity: 1; transform: none; }
 }
+
+
+/* ── Reading order ─────────────────────────────────────────────────────
+   The best order for the screen is the opposite of the best order for the
+   book. Online, the messages and the invitation to write must come first or
+   nobody writes. On paper, a book opens with its title page and the occasion,
+   and the messages are the body of it.
+
+   The DOM is in BOOK order, so printing needs no help and pagination stays in
+   simple block flow. The screen reorders with flex, where there are no pages
+   to break.
+   ──────────────────────────────────────────────────────────────────────── */
+@media screen {
+  .book { display: flex; flex-direction: column; }
+  .o-title     { order: 1; }
+  .o-band      { order: 2; }
+  .o-liber     { order: 3; }
+  .o-leaves    { order: 4; }
+  .o-tail      { order: 5; }
+  .o-plate     { order: 6; }
+  .o-defence   { order: 7; }
+  .o-attending { order: 8; }
+  /* keep each plate next to the section it belongs to */
+  .o-plate:nth-of-type(1) { order: 6; }
+  .o-defence              { order: 7; }
+  .o-plate:nth-of-type(2) { order: 8; }
+  .o-attending            { order: 9; }
+  .o-plate:nth-of-type(3) { order: 10; }
+}
