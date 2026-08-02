@@ -43,9 +43,14 @@
 html { font-size: 10.5pt; }
 body { background: #FBF9F4; color: #14110C; }
 
-/* Screen-only furniture */
+/* Screen-only furniture. #attending goes too: a form deadline that has passed
+   has no place in a keepsake, and neither does a button. */
 .gate, .sheet, .cta, .filters, .btn, .leaf__edit, .tail,
-form, dialog, #loading, .sheet__close-form { display: none !important; }
+form, dialog, #loading, .sheet__close-form,
+#attending, #tail-cta, .photo-note { display: none !important; }
+
+/* The book prints in DOM order, so flex ordering must not follow it here. */
+.book { display: block !important; }
 
 #book { display: block !important; }
 
