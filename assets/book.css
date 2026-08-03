@@ -332,6 +332,11 @@ a:hover { text-decoration-thickness: 2px; }
 .loading { color: var(--ink-soft); font-style: italic; }
 .empty { color: var(--ink-soft); }
 
+/* The site invites people to write; the printed book only holds what they
+   wrote. Anything that is an instruction to a visitor is marked screen-only,
+   and the printed section opens with its own heading instead. */
+.print-only { display: none !important; }
+
 /* Persian leaves are actually Persian */
 [lang="fa"] {
   font-family: 'Vazirmatn', serif; font-size: 1.08em; line-height: 1.95;
