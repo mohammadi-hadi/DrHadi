@@ -15,6 +15,7 @@ var GATE_PASSWORD = 'drhadi123';
 var LS_AUTH = 'liber.auth';
 var LS_KEYS = 'liber.keys';     // array — a guest often writes for the whole family
 var LS_DRAFT = 'liber.draft';
+var LS_CACHE = 'liber.book';    // last good copy, so a return visit opens instantly
 
 var $ = function (s, r) { return (r || document).querySelector(s); };
 var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
@@ -37,6 +38,36 @@ function callRetry(payload) {
   return call(payload).catch(function () {
     return new Promise(function (r) { setTimeout(r, 1500); }).then(function () { return call(payload); });
   });
+}
+
+/**
+ * Reading the book only. Apps Script wakes cold and has been seen to take
+ * fifteen seconds, and to answer a stray request with a 404 HTML page that
+ * makes r.json() throw. Neither is worth showing a guest, so try three times.
+ * A real answer from the server ({ok:false}) is never retried — that is a
+ * configuration fault, not a blip, and repeating it only wastes the wait.
+ */
+function readRetry(payload) {
+  var attempt = function (n) {
+    return call(payload).then(function (r) {
+      if (!r || !r.ok) { var e = new Error((r && r.error) || 'list failed'); e.server = true; throw e; }
+      return r;
+    }).catch(function (err) {
+      if (err.server || n >= 3) throw err;
+      return new Promise(function (res) { setTimeout(res, n === 1 ? 1200 : 3000); })
+        .then(function () { return attempt(n + 1); });
+    });
+  };
+  return attempt(1);
+}
+
+// ── The last good copy of the book ───────────────────────────────────────
+function cacheGet() {
+  try { return JSON.parse(localStorage.getItem(LS_CACHE) || 'null'); } catch (e) { return null; }
+}
+function cacheSet(r) {
+  try { localStorage.setItem(LS_CACHE, JSON.stringify({ leaves: r.leaves, stats: r.stats })); }
+  catch (e) { /* private mode, or full — the book still works, it just waits */ }
 }
 
 // ── Language ─────────────────────────────────────────────────────────────
@@ -206,7 +237,12 @@ function render() {
   box.innerHTML = list.map(leafHTML).join('');
   var where = { all: '', en: ' in English', nl: ' in Dutch', fa: ' in Persian' }[state.filter] || '';
   var st = $('#leaves-status');
-  if (st) st.textContent = list.length + (list.length === 1 ? ' message' : ' messages') + where + '.';
+  if (st) {
+    st.textContent = list.length + (list.length === 1 ? ' message' : ' messages') + where + '.' +
+      // Say so, or someone who has just edited their words will think the
+      // change was lost when the saved copy shows the old text for a moment.
+      (state.stale ? ' Saved copy — checking for newer ones…' : '');
+  }
   observe();
 }
 
@@ -223,30 +259,81 @@ function observe() {
   $$('#leaves .leaf').forEach(function (n) { io.observe(n); });
 }
 
-function load() {
-  callRetry({ action: 'list' }).then(function (r) {
-    if (!r || !r.ok) throw new Error('list failed');
-    state.leaves = r.leaves || [];
-    $('#loading') && ($('#loading').hidden = true);
-    // The second "write" button only earns its place once there are leaves
-    // above it; otherwise it sits inches below the first and reads as a bug.
-    $('#tail-cta').hidden = false;          // the ask must always be reachable
-    $('#filters').hidden = state.leaves.length < 4;
-    $('#count').textContent = r.stats.leaves;
-    $('#stat-leaves').textContent = r.stats.leaves;
-    $('#stat-langs').textContent = r.stats.langs;
-    $('#stat-cities').textContent = r.stats.cities;
-    $('#w-leaves').textContent = r.stats.leaves === 1 ? 'leaf' : 'leaves';
-    $('#w-langs').textContent = r.stats.langs === 1 ? 'language' : 'languages';
-    $('#w-cities').textContent = r.stats.cities === 1 ? 'city' : 'cities';
-    render();
-    flushQueue();
-  }).catch(function () {
+/** Paint a list — from the cache first, then again from the server. */
+function applyList(r, stale) {
+  state.leaves = r.leaves || [];
+  state.stale = !!stale;
+  // The second "write" button only earns its place once there are leaves
+  // above it; otherwise it sits inches below the first and reads as a bug.
+  $('#tail-cta').hidden = false;          // the ask must always be reachable
+  $('#filters').hidden = state.leaves.length < 4;
+  $('#count').textContent = r.stats.leaves;
+  $('#stat-leaves').textContent = r.stats.leaves;
+  $('#stat-langs').textContent = r.stats.langs;
+  $('#stat-cities').textContent = r.stats.cities;
+  $('#w-leaves').textContent = r.stats.leaves === 1 ? 'leaf' : 'leaves';
+  $('#w-langs').textContent = r.stats.langs === 1 ? 'language' : 'languages';
+  $('#w-cities').textContent = r.stats.cities === 1 ? 'city' : 'cities';
+  render();
+}
+
+/**
+ * Google can take fifteen seconds to answer. A page that says nothing for
+ * fifteen seconds reads as broken, and people leave — so say what is
+ * happening, and offer a way out.
+ */
+function waitingCopy() {
+  var t1 = setTimeout(function () {
+    var el = $('#loading');
+    if (el) el.textContent = 'Still opening — this can take up to fifteen seconds.';
+  }, 4000);
+  var t2 = setTimeout(function () {
     var el = $('#loading');
     if (el) {
-      el.className = 'empty';
-      el.textContent = CONFIGURED
-        ? 'The book could not be opened just now. Please refresh in a moment — nothing has been lost.'
+      el.innerHTML = 'This is slower than it should be. ' +
+        '<button class="btn btn--quiet" type="button" id="retry-load">Try again</button>';
+    }
+  }, 14000);
+  return function () { clearTimeout(t1); clearTimeout(t2); };
+}
+
+var loading = false, loadAgain = false;
+
+function load() {
+  // A guest who writes while the book is still opening must still see their
+  // own leaf, so a second call is remembered rather than thrown away.
+  if (loading) { loadAgain = true; return; }
+  loading = true;
+
+  var cached = cacheGet();
+  if (cached && cached.leaves && cached.leaves.length) applyList(cached, true);
+
+  var el = $('#loading');
+  if (el) el.textContent = 'Opening the book…';
+  var done = waitingCopy();
+
+  readRetry({ action: 'list' }).then(function (r) {
+    done();
+    loading = false;
+    cacheSet(r);
+    applyList(r, false);
+    flushQueue();
+    if (loadAgain) { loadAgain = false; load(); }
+  }).catch(function () {
+    done();
+    loading = false;
+    if (loadAgain) { loadAgain = false; load(); return; }
+    if (state.leaves.length) {          // the cached book is on screen; keep it
+      var st = $('#leaves-status');
+      if (st) st.textContent = 'Showing the copy saved on this device. Refresh for the latest.';
+      return;
+    }
+    var box = $('#loading');
+    if (box) {
+      box.className = 'empty';
+      box.innerHTML = CONFIGURED
+        ? 'The book could not be opened just now. Nothing has been lost. ' +
+          '<button class="btn btn--quiet" type="button" id="retry-load">Try again</button>'
         : 'The book is not open yet. It will be ready shortly.';
     }
   });
@@ -599,6 +686,11 @@ function init() {
   });
 
   $('#leaves').addEventListener('click', function (e) {
+    if (e.target.id === 'retry-load') {
+      $('#leaves').innerHTML = '<p class="loading" id="loading">Opening the book…</p>';
+      load();
+      return;
+    }
     var b = e.target.closest('[data-edit]');
     if (!b) return;
     var token = myIds()[b.getAttribute('data-edit')];
