@@ -329,7 +329,7 @@ function sendEditLink_(rec, folio) {
       name: MAIL_FROM_NAME,
       subject: 'Thank you \u2014 your message is in the book for Hadi',
       body: 'Thank you for writing in the book for Hadi Mohammadi.\n\n' +
-            'Your message is leaf ' + folio + '.\n\n' +
+            'Your message is on page ' + folio + '.\n\n' +
             'If you would like to change or remove it, use this link:\n' +
             editUrl_(rec.token) + '\n\n' +
             'Or email this code to m.behbahani@uu.nl: ' + rec.code + '\n\n' +
@@ -350,9 +350,9 @@ function notify_(rec, folio) {
     if (MailApp.getRemainingDailyQuota() < 5) return;
     MailApp.sendEmail({
       to: to,
-      subject: 'Liber Amicorum — blad ' + folio + ': ' + rec.name,
+      subject: 'A book of friends — page ' + folio + ': ' + rec.name,
       body: rec.name + (rec.relation ? ' (' + rec.relation + ')' : '') +
-            (rec.city ? ' — ' + rec.city : '') + '\n\n' + rec.body + '\n\n— blad ' + folio
+            (rec.city ? ' — ' + rec.city : '') + '\n\n' + rec.body + '\n\n— page ' + folio
     });
   } catch (err) { /* never let mail failure break a submission */ }
 }

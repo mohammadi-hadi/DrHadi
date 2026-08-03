@@ -77,9 +77,9 @@
 </section>
 
 <div class="band o-band">
-  <p class="band__text">a book of congratulations</p>
+  <p class="band__text">a book of friends</p>
   <p class="band__stats" id="stats">
-    <span class="num" id="stat-leaves">—</span> <span id="w-leaves">leaves</span> ·
+    <span class="num" id="stat-leaves">—</span> <span id="w-leaves">messages</span> ·
     <span class="num" id="stat-langs">—</span> <span id="w-langs">languages</span> ·
     <span class="num" id="stat-cities">—</span> <span id="w-cities">cities</span>
   </p>
@@ -193,11 +193,11 @@
 <section class="spread o-liber" id="liber">
   <p class="folio">1</p>
   <div class="col">
-    <p class="kicker">Book of Friends</p>
-    <h2>Write something for Hadi</h2>
-    <p class="lead">A few lines is plenty — in English, Dutch or Persian. Everything written here is
-      printed in a hardcover book and given to him after the defence.</p>
-    <p class="sub" lang="nl">Schrijf gerust in het Nederlands.<br>
+    <p class="kicker print-only">Book of Friends</p>
+    <h2 class="screen-only">Write something for Hadi</h2>
+    <p class="lead screen-only">A few lines is plenty — in English, Dutch or Persian. Everything written
+      here is printed in a book and given to him after the defence.</p>
+    <p class="sub screen-only" lang="nl">Schrijf gerust in het Nederlands.<br>
       <span lang="fa" dir="rtl">به فارسی بنویسید — چند خط کافی است.</span></p>
 
     <div class="cta cta--hero">
@@ -207,9 +207,9 @@
       <button class="btn btn--quiet" id="open-find" type="button">I've already written</button>
     </div>
 
-    <p class="sub">Please write before <strong>Sunday 30 August 2026</strong>. The book is printed in
+    <p class="sub screen-only">Please write before <strong>Sunday 30 August 2026</strong>. The book is printed in
       the days that follow, so that it is bound and ready for the defence on 9 September.</p>
-    <p class="sub">Rather not use the website? Email your message to
+    <p class="sub screen-only">Rather not use the website? Email your message to
       <a href="mailto:m.behbahani@uu.nl?subject=A%20message%20for%20the%20book">m.behbahani@uu.nl</a>
       and it will be written in for you.</p>
 
@@ -218,13 +218,13 @@
       few lines in whatever language they pleased. This is Hadi's.</p>
 
     <div class="filters" id="filters" hidden>
-      <span class="filters__label">leaves: <span class="num" id="count">0</span></span>
+      <span class="filters__label">messages: <span class="num" id="count">0</span></span>
       <button class="chip is-on" data-lang="all" type="button">all</button>
       <button class="chip" data-lang="en" type="button">English</button>
       <button class="chip" data-lang="nl" type="button">Dutch</button>
       <button class="chip" data-lang="fa" type="button">Persian</button>
     </div>
-    <p class="sub" id="leaves-status" role="status" aria-live="polite"></p>
+    <p class="sub screen-only" id="leaves-status" role="status" aria-live="polite"></p>
   </div>
 </section>
 
@@ -311,7 +311,7 @@
       <p class="field__label">To change it later, keep this link</p>
       <input id="ex-link" readonly onclick="this.select()">
       <button class="btn" type="button" id="copy-link">Copy link</button>
-      <p class="field__label">Or say this code to Mehran or Mohammad</p>
+      <p class="field__label">Or email this code to m.behbahani@uu.nl</p>
       <p class="exlibris__code" id="ex-code">—</p>
     </div>
     <p class="sub photo-note">Would you like a photograph beside your message in the printed book?
@@ -323,7 +323,7 @@
     <button class="btn btn--solid" type="button" id="ex-done">Read the book</button>
   </div>
 
-  <!-- Find my leaf -->
+  <!-- Find my message -->
   <form id="find-form" class="sheet__form" hidden>
     <h2 class="sheet__title">Change what you wrote</h2>
     <p class="sheet__intro">Enter the email address you used. We will send you a link to your
@@ -359,7 +359,8 @@
     <h2 class="exlibris__title">We have sent you a link.</h2>
     <p>If a message in the book was written from that address, a link to change it is on its way.
       It can take a minute, and it often lands in spam — work and university addresses block it most
-      often. If nothing arrives, use your code instead, or ask Mehran or Mohammad.</p>
+      often. If nothing arrives, use your code instead, or email
+      <a href="mailto:m.behbahani@uu.nl?subject=Book%20for%20Hadi%20%E2%80%94%20I%20cannot%20find%20my%20message">m.behbahani@uu.nl</a>.</p>
     <button class="btn btn--solid" type="button" id="sent-done">Back to the book</button>
   </div>
 

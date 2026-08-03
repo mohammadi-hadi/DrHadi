@@ -54,7 +54,12 @@ body { background: none; color: #000; }
    has no place in a keepsake, and neither does a button. */
 .gate, .sheet, .cta, .filters, .btn, .leaf__edit, .tail,
 form, dialog, #loading, .sheet__close-form,
-#attending, #tail-cta, .photo-note { display: none !important; }
+#attending, #tail-cta, .photo-note, .screen-only { display: none !important; }
+
+/* "Write something for Hadi", the deadline, the address to email instead —
+   all of it belongs on the website and none of it in a bound keepsake. The
+   section opens on its own name and the note about what a book of friends is. */
+.print-only { display: block !important; }
 
 /* The book prints in DOM order, so flex ordering must not follow it here. */
 .book { display: block !important; }
@@ -83,7 +88,7 @@ form, dialog, #loading, .sheet__close-form,
   letter-spacing: 0; text-transform: none;
 }
 
-h1, h2, h3 { break-after: avoid; }
+h1, h2, h3, .kicker { break-after: avoid; }
 .titlepage, #liber, #colophon { break-before: right; }
 .plate-section { break-before: page; background: none !important; padding: 0 !important; }
 .plate img { filter: grayscale(1) contrast(1.06) !important; max-inline-size: 100%; }

@@ -208,14 +208,14 @@ function leafHTML(l) {
   var date = fmtDate(l.updated || l.created, l.lang);
   return '<article class="leaf" lang="' + esc(l.lang) + '" dir="' + (rtl ? 'rtl' : 'ltr') +
     '" data-lang="' + esc(l.lang) + '" data-id="' + esc(l.id) + '">' +
-    '<p class="leaf__folio">' + (rtl ? 'برگ ' : 'leaf ') + fmtFolio(l.folio, l.lang) + '</p>' +
+    '<p class="leaf__folio">' + (rtl ? 'صفحه ' : 'page ') + fmtFolio(l.folio, l.lang) + '</p>' +
     '<div class="leaf__body">' + esc(l.body) + '</div>' +
     photosHTML(l) +
     '<p class="leaf__sig"><span class="leaf__name">' + esc(l.name) + '</span>' +
     (meta ? '<br><span class="leaf__meta">' + esc(meta) + '</span>' : '') +
     (date ? '<br><span class="leaf__meta">' + esc(date) + '</span>' : '') +
     '</p>' +
-    (mine ? '<button class="leaf__edit" data-edit="' + esc(l.id) + '" type="button">✎ Edit my leaf</button>' : '') +
+    (mine ? '<button class="leaf__edit" data-edit="' + esc(l.id) + '" type="button">✎ Edit my message</button>' : '') +
     '</article>';
 }
 
@@ -271,7 +271,7 @@ function applyList(r, stale) {
   $('#stat-leaves').textContent = r.stats.leaves;
   $('#stat-langs').textContent = r.stats.langs;
   $('#stat-cities').textContent = r.stats.cities;
-  $('#w-leaves').textContent = r.stats.leaves === 1 ? 'leaf' : 'leaves';
+  $('#w-leaves').textContent = r.stats.leaves === 1 ? 'message' : 'messages';
   $('#w-langs').textContent = r.stats.langs === 1 ? 'language' : 'languages';
   $('#w-cities').textContent = r.stats.cities === 1 ? 'city' : 'cities';
   render();
@@ -610,7 +610,7 @@ function submitCode() {
   if (!code) { err.textContent = 'Enter your code.'; err.hidden = false; return; }
   callRetry({ action: 'lookup', code: code }).then(function (r) {
     if (!r || !r.ok) {
-      err.textContent = 'That code was not found. Check it, or ask Mehran or Mohammad.';
+      err.textContent = 'That code was not found. Check it, or email m.behbahani@uu.nl.';
       err.hidden = false;
       return;
     }
