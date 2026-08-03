@@ -115,7 +115,7 @@ function initGate() {
     } else {
       var err = $('#gate-error');
       err.innerHTML = 'That password is not right. It is in the email that brought you here \u2014 ' +
-        'or ask <a href="mailto:hadimh.93@gmail.com?subject=Password%20for%20the%20book">Hadi</a>.';
+        'or ask <a href="mailto:m.behbahani@uu.nl?subject=Password%20for%20the%20book">Mohammad</a>.';
       err.hidden = false;
       $('#gate-pass').value = '';
       $('#gate-pass').focus();
@@ -436,8 +436,8 @@ function submitWrite(e) {
     if (r && r.ok && !state.editing && (r.token === 'x' || r.folio === 0)) {
       err.innerHTML = 'Something went wrong at our end. <strong>Your words are still in the box ' +
         'above</strong> — please copy them, or email them to ' +
-        '<a href="mailto:hadimh.93@gmail.com?subject=My%20message%20for%20the%20book">' +
-        'hadimh.93@gmail.com</a>, so nothing is lost.';
+        '<a href="mailto:m.behbahani@uu.nl?subject=My%20message%20for%20the%20book">' +
+        'm.behbahani@uu.nl</a>, so nothing is lost.';
       err.hidden = false;
       return;
     }
@@ -464,7 +464,7 @@ function submitWrite(e) {
   }).catch(function () {
     btn.disabled = false;
     btn.textContent = state.editing ? 'Save my changes' : 'Send my message';
-    var mailto = '<a href="mailto:mehran1414@gmail.com?subject=' +
+    var mailto = '<a href="mailto:m.behbahani@uu.nl?subject=' +
       encodeURIComponent('The book for Hadi — my message') +
       '&body=' + encodeURIComponent(body) + '">send it by email instead</a>';
     if (!CONFIGURED) {
@@ -570,7 +570,7 @@ function init() {
     e2.hidden = true;
     callRetry({ action: 'update', token: state.editing, remove: true }).then(function (r) {
       if (!r || !r.ok) {
-        e2.textContent = 'That did not remove. Please try again, or email hadimh.93@gmail.com ' +
+        e2.textContent = 'That did not remove. Please try again, or email m.behbahani@uu.nl ' +
           'and it will be taken out by hand.';
         e2.hidden = false; return;
       }
