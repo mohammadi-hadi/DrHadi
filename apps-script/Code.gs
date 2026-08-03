@@ -332,7 +332,7 @@ function sendEditLink_(rec, folio) {
             'Your message is leaf ' + folio + '.\n\n' +
             'If you would like to change or remove it, use this link:\n' +
             editUrl_(rec.token) + '\n\n' +
-            'Or give this code to Mehran or Mohammad: ' + rec.code + '\n\n' +
+            'Or email this code to m.behbahani@uu.nl: ' + rec.code + '\n\n' +
             'You can make changes until 30 August, when the book goes to the printer.\n'
     });
   } catch (err) { /* a mail failure must never cost someone their message */ }
