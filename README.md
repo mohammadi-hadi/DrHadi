@@ -1,7 +1,12 @@
+<div align="center">
+
 # Liber Amicorum — a book of friends
 
-A password-gated keepsake site for the PhD defence of Hadi Mohammadi, Academiegebouw Utrecht,
-Wednesday 9 September 2026. Guests write a message directly on the site and can edit it themselves
+*A password-gated keepsake site for the PhD defence of Hadi Mohammadi, Academiegebouw Utrecht, Wednesday 9 September 2026.*
+
+</div>
+
+Guests write a message directly on the site and can edit it themselves
 afterwards; everything is printed as an A5 book in time for the defence.
 
 The site is static. The messages live in a Google Sheet behind a Google Apps Script web app, so
