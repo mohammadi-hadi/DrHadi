@@ -483,6 +483,7 @@ a:hover { text-decoration-thickness: 2px; }
   .o-tail      { order: 6; }
   .o-plate-2   { order: 7; }
   .o-defence   { order: 8; }
-  .o-plate-3   { order: 9; }
-  .o-attending { order: 10; }
+  .o-attending { order: 9; }
+  /* Plate III closes the page, the way a photograph closes a book. */
+  .o-plate-3   { order: 10; }
 }
