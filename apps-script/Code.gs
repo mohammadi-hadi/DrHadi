@@ -90,6 +90,20 @@ function clean_(v, max) {
   return String(v == null ? '' : v).replace(/[\u0000-\u001F\u007F]/g, '').trim().slice(0, max);
 }
 
+/**
+ * The message itself is the one field where a line break is part of what the
+ * guest wrote — a greeting on its own line, a poem, a signature at the end.
+ * clean_ strips every control character, newlines included, which quietly ran
+ * every message together into one block. Keep the newlines here; the page
+ * already renders them (white-space: pre-wrap) and the printed book follows.
+ */
+function cleanBody_(v, max) {
+  return String(v == null ? '' : v)
+    .replace(/\r\n?/g, '\n')
+    .replace(/[\u0000-\u0009\u000B\u000C\u000E-\u001F\u007F]/g, '')
+    .trim().slice(0, max);
+}
+
 /** Farsi/Arabic script anywhere in the text → treat the leaf as Persian. */
 function detectLang_(s) {
   if (/[؀-ۿݐ-ݿﭐ-﷿ﹰ-﻿]/.test(s)) return 'fa';
@@ -166,7 +180,7 @@ function list_() {
 }
 
 function create_(b) {
-  var body  = clean_(b.body, MAX.body);
+  var body  = cleanBody_(b.body, MAX.body);
   var name  = clean_(b.name, MAX.name);
   var email = clean_(b.email, MAX.email);
   if (!body || !name) return { ok: false, error: 'empty' };
@@ -225,7 +239,7 @@ function update_(b) {
     return { ok: true, removed: true };
   }
 
-  var body = clean_(b.body, MAX.body);
+  var body = cleanBody_(b.body, MAX.body);
   if (!body) return { ok: false, error: 'empty' };
 
   var revs = [];
