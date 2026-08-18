@@ -431,7 +431,14 @@ function restoreDraft() {
 function queue(payload) {
   try {
     var q = JSON.parse(localStorage.getItem('liber.queue') || '[]');
-    q.push(payload);
+    // "elapsed" is how long the form was open, and the server refuses anything
+    // under four seconds as a bot. It is sent again on a reconnect, or on the
+    // next visit — by then the number means nothing, and a small one would
+    // have the server refuse, over and over, a message the guest has been told
+    // is safely on its way. Drop it before it is stored.
+    var stored = Object.assign({}, payload);
+    delete stored.elapsed;
+    q.push(stored);
     localStorage.setItem('liber.queue', JSON.stringify(q));
   } catch (e) {}
 }
