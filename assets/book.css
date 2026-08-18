@@ -472,15 +472,17 @@ a:hover { text-decoration-thickness: 2px; }
    ──────────────────────────────────────────────────────────────────────── */
 @media screen {
   .book { display: flex; flex-direction: column; }
+  /* The plates are lifted one place each, so a photograph opens the page and
+     the others break up the run of text, instead of all three sitting below
+     the messages where few readers reach them. */
   .o-title     { order: 1; }
-  .o-band      { order: 2; }
-  .o-liber     { order: 3; }
-  .o-leaves    { order: 4; }
-  .o-tail      { order: 5; }
-  /* each plate stays next to the section it belongs to */
-  .o-plate-1   { order: 6; }
-  .o-defence   { order: 7; }
-  .o-plate-2   { order: 8; }
-  .o-attending { order: 9; }
-  .o-plate-3   { order: 10; }
+  .o-plate-1   { order: 2; }
+  .o-band      { order: 3; }
+  .o-liber     { order: 4; }
+  .o-leaves    { order: 5; }
+  .o-tail      { order: 6; }
+  .o-plate-2   { order: 7; }
+  .o-defence   { order: 8; }
+  .o-plate-3   { order: 9; }
+  .o-attending { order: 10; }
 }
