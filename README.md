@@ -9,8 +9,8 @@
 Guests wrote a message directly on the site and could edit it themselves
 afterwards; the messages were collected for an A5 book for the defence.
 
-The site is static. The messages live in a Google Sheet behind a Google Apps Script web app, so
-there is no server to run and nothing that sleeps or expires.
+The site is static. While the guestbook was open, the messages lived in a Google Sheet behind a
+Google Apps Script web app, so there was no server to run and nothing that sleeps or expires.
 
 ---
 
@@ -103,13 +103,10 @@ Final typesetting for a press may still want manual touch-up. Give the printer P
 
 ## The Freeze — 31 August 2026
 
-The guestbook closes 30 August. On 31 August:
-
-1. Download the Sheet as JSON/CSV and commit it to this repo along with the photos.
-2. Point the site at the static export instead of the API.
-
-From then on the site never calls Google again, and the export — not the Sheet — is the archive
-that outlives every service involved.
+The guestbook closed on 30 August. The site now reads `data/book.json`, which holds only the
+fields the book shows (folio, name, relation, city, language, message and dates; no email
+addresses, edit tokens or codes), and it no longer calls Google. The export, not the Sheet, is
+the archive that outlives every service involved.
 
 ---
 

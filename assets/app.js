@@ -3,7 +3,8 @@
    Static front end. Data lives in a Google Sheet behind an Apps Script
    web app. Every request stays a CORS "simple request": POST with
    Content-Type text/plain and no custom headers, because Google answers
-   preflight with 405 before the script ever runs.
+   preflight with 405 before the script ever runs. Since the book closed,
+   FROZEN makes it read data/book.json instead and never call Google.
    ═══════════════════════════════════════════════════════════════════════ */
 
 // ── CONFIG ───────────────────────────────────────────────────────────────
@@ -11,6 +12,8 @@ var API = 'https://script.google.com/macros/s/AKfycbxn006w5LtuL_mr9JubTE3UX6Ty11
 var CONFIGURED = API.indexOf('script.google.com') === 0 || /^https?:/.test(API);
 var API_SECRET = 'ucgmiGcSkoHtLc3hJDWK8C_bD0YoVtb2m8jsaMMr6K4';   // must match APP_SECRET in Code.gs
 var GATE_PASSWORD = 'drhadi123';
+var FROZEN = true;                  // the guestbook closed on 30 August 2026
+var BOOK_JSON = 'data/book.json';   // the public fields of every message, exported at the freeze
 
 var LS_AUTH = 'liber.auth';
 var LS_KEYS = 'liber.keys';     // array — a guest often writes for the whole family
@@ -59,6 +62,15 @@ function readRetry(payload) {
     });
   };
   return attempt(1);
+}
+
+/** Once the book is frozen, the static export is the whole book. */
+function readBook() {
+  if (!FROZEN) return readRetry({ action: 'list' });
+  return fetch(BOOK_JSON, { cache: 'no-cache' }).then(function (r) {
+    if (!r.ok) throw new Error('book ' + r.status);
+    return r.json();
+  });
 }
 
 // ── The last good copy of the book ───────────────────────────────────────
@@ -158,7 +170,7 @@ function initGate() {
 function handleDeepLink() {
   var p = new URLSearchParams(location.search);
   var token = p.get('t');
-  if (token) {
+  if (token && !FROZEN) {
     remember(token);
     openEditByToken(token);
   }
@@ -202,7 +214,7 @@ function photosHTML(l) {
 }
 
 function leafHTML(l) {
-  var mine = !!myIds()[l.id];
+  var mine = !FROZEN && !!myIds()[l.id];
   var rtl = l.lang === 'fa';
   var meta = [l.relation, l.city].filter(Boolean).join(' · ');
   var date = fmtDate(l.updated || l.created, l.lang);
@@ -265,7 +277,7 @@ function applyList(r, stale) {
   state.stale = !!stale;
   // The second "write" button only earns its place once there are leaves
   // above it; otherwise it sits inches below the first and reads as a bug.
-  $('#tail-cta').hidden = false;          // the ask must always be reachable
+  $('#tail-cta').hidden = FROZEN;         // the ask must always be reachable while the book is open
   $('#filters').hidden = state.leaves.length < 4;
   $('#count').textContent = r.stats.leaves;
   $('#stat-leaves').textContent = r.stats.leaves;
@@ -312,7 +324,7 @@ function load() {
   if (el) el.textContent = 'Opening the book…';
   var done = waitingCopy();
 
-  readRetry({ action: 'list' }).then(function (r) {
+  readBook().then(function (r) {
     done();
     loading = false;
     cacheSet(r);
@@ -444,7 +456,7 @@ function queue(payload) {
 }
 var flushing = false;
 function flushQueue() {
-  if (flushing) return;
+  if (FROZEN || flushing) return;
   var q;
   try { q = JSON.parse(localStorage.getItem('liber.queue') || '[]'); } catch (e) { return; }
   if (!q.length) return;
@@ -639,6 +651,12 @@ function init() {
     ['#open-write', '#open-write-2', '#open-find'].forEach(function (sel) {
       var b = $(sel);
       if (b) { b.disabled = true; b.title = 'The book is not accepting messages yet.'; }
+    });
+  }
+  if (FROZEN) {
+    ['#open-write', '#open-write-2', '#open-find'].forEach(function (sel) {
+      var b = $(sel);
+      if (b) b.hidden = true;
     });
   }
 
