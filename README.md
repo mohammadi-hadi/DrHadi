@@ -6,8 +6,8 @@
 
 </div>
 
-Guests write a message directly on the site and can edit it themselves
-afterwards; everything is printed as an A5 book in time for the defence.
+Guests wrote a message directly on the site and could edit it themselves
+afterwards; the messages were collected for an A5 book for the defence.
 
 The site is static. The messages live in a Google Sheet behind a Google Apps Script web app, so
 there is no server to run and nothing that sleeps or expires.
